@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>iOS 播放本地音频 | Summer Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="产品同学想要实现一个功能:用户完成某个任务时,进行语音提示. 于是这个简单的要求,折磨我3天(；′⌒`), 实践证明,开发之前的充分调研能够少走弯路; 开发经验也的确能够缩短开发时间
+
+
+那些自己尝试(zou)过(guo)的(de)方(wan)法(lu)💨
+定时声音推送(UILocalNotification), 类似闹钟的功能,到了指定时间后,响起一段音乐. 然而这样做的问题在于,并不知道用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 播放本地音频">
+<meta property="og:url" content="http://yoursite.com/2016/10/24/iOS-播放本地音频/index.html">
+<meta property="og:site_name" content="Summer Blog">
+<meta property="og:description" content="产品同学想要实现一个功能:用户完成某个任务时,进行语音提示. 于是这个简单的要求,折磨我3天(；′⌒`), 实践证明,开发之前的充分调研能够少走弯路; 开发经验也的确能够缩短开发时间
+
+
+那些自己尝试(zou)过(guo)的(de)方(wan)法(lu)💨
+定时声音推送(UILocalNotification), 类似闹钟的功能,到了指定时间后,响起一段音乐. 然而这样做的问题在于,并不知道用">
+<meta property="og:updated_time" content="2016-10-24T10:07:23.062Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS 播放本地音频">
+<meta name="twitter:description" content="产品同学想要实现一个功能:用户完成某个任务时,进行语音提示. 于是这个简单的要求,折磨我3天(；′⌒`), 实践证明,开发之前的充分调研能够少走弯路; 开发经验也的确能够缩短开发时间
+
+
+那些自己尝试(zou)过(guo)的(de)方(wan)法(lu)💨
+定时声音推送(UILocalNotification), 类似闹钟的功能,到了指定时间后,响起一段音乐. 然而这样做的问题在于,并不知道用">
+  
+    <link rel="alternate" href="/atom.xml" title="Summer Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Summer Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-iOS-播放本地音频" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/24/iOS-播放本地音频/" class="article-date">
+  <time datetime="2016-10-24T10:05:02.000Z" itemprop="datePublished">2016-10-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS 播放本地音频
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<font color="#0099ff" size="3" face="黑体">产品同学想要实现一个功能:用户完成某个任务时,进行语音提示. 于是这个简单的要求,折磨我3天(；′⌒`), 实践证明,开发之前的充分调研能够少走弯路; 开发经验也的确能够缩短开发时间</font>
+
+</blockquote>
+<h2 id="那些自己尝试-zou-过-guo-的-de-方-wan-法-lu-💨"><a href="#那些自己尝试-zou-过-guo-的-de-方-wan-法-lu-💨" class="headerlink" title="那些自己尝试(zou)过(guo)的(de)方(wan)法(lu)💨"></a>那些自己尝试(zou)过(guo)的(de)方(wan)法(lu)💨</h2><ul>
+<li>定时声音推送(UILocalNotification), 类似闹钟的功能,到了指定时间后,响起一段音乐. 然而这样做的问题在于,并不知道用户什么时候做任务; 且任务切出界面后,任务需要结束. 本地通知不能满足要求ˇˍˇ ,放弃</li>
+<li>AVAudioPlayer播放本地音频, 这个好,棒极了,开发完之后,发现产品需要音乐能够后台配置(论读懂需求的重要性),且音乐时长也许会超过30s. 再弃</li>
+<li>最后选择了AVPlayer</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>1.AVAudioPlayer和AVPlayer声明对象都需要设置成全局变量<br>2.AVAudioPlayer和AVPlayer都需要引入AVFoundation框架<br>3.iOS9引入了新特性App Transport Security (ATS),需要在plist中添加权限. 添加方式:左键Info.plist选择open with source code</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">	&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;</span><br><span class="line">	&lt;true/&gt;</span><br><span class="line">&lt;/dict&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="写代码"><a href="#写代码" class="headerlink" title="写代码"></a>写代码</h2><p>1.加载音频文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//播放本地音频</span><br><span class="line">  NSString *filePath = [[NSBundle mainBundle] pathForResource:@&quot;独角戏&quot;  ofType:@&quot;mp3&quot;];</span><br><span class="line">  NSURL *sourceMovieUrl =  [NSURL fileURLWithPath:filePath];</span><br><span class="line">  //播放网络音频</span><br><span class="line">  //NSURL *sourceMovieUrl = [NSURL URLWithString:urlString]</span><br></pre></td></tr></table></figure>
+<p>上面的代码中本地音频和在线音频的主要区别在于路径的不同:本地路径使用<code>[NSURL fileURLWithPath:本地音频路径]</code>,在线音频使用<code>[NSURL URLWithString:在线音乐地址]</code></p>
+<p>2.创建AVPlayer</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">AVAsset *movieAsset = [AVURLAsset URLAssetWithURL:sourceMovieUrl options:nil];</span><br><span class="line">self.timerPlayerItem = [AVPlayerItem playerItemWithAsset:movieAsset];</span><br><span class="line"></span><br><span class="line">//这是用来支持后台播放的</span><br><span class="line">AVAudioSession *audioSession = [AVAudioSession sharedInstance];</span><br><span class="line">NSError *setCategoryError = nil;</span><br><span class="line">[audioSession setCategory:AVAudioSessionCategoryPlayback error:&amp;setCategoryError];</span><br><span class="line"></span><br><span class="line">[audioSession setActive:YES error:nil];</span><br><span class="line">if (setCategoryError) &#123;</span><br><span class="line">    NSLog(@&quot;这里有问题 %@&quot;,setCategoryError);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">self.timerPlayer = [[AVPlayer alloc]initWithPlayerItem:self.timerPlayerItem];</span><br></pre></td></tr></table></figure>
+<p>有了音频文件的路径,剩下的就是将音乐播放出来了.上面的代码有俩个作用:1.创建AVAudioSession使得播放器支持后台播放 2.创建音频播放器. 其中代码中用到的<code>AVAsset</code>是个抽象类,不能够单独使用.</p>
+<p>3.播放</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[self.timerPlayer play];</span><br></pre></td></tr></table></figure>
+<p>如果仅仅是播放音乐,上面的代码就足够了,但往往播放音乐后还需要许多操作,比如音乐完成后界面需要提示啊,音乐播放进度等等. 于是就有了下面的监听</p>
+<p>4.添加和移除监听</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//添加监听</span><br><span class="line">- (void)addObserverForPlayerItem</span><br><span class="line">&#123;</span><br><span class="line">    [self.timerPlayer.currentItem addObserver:self forKeyPath:@&quot;status&quot; options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];</span><br><span class="line">    [self.timerPlayer.currentItem addObserver:self forKeyPath:@&quot;loadedTimeRanges&quot; options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];</span><br><span class="line">    </span><br><span class="line">    //添加音乐播放完成的通知</span><br><span class="line">    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying) name:AVPlayerItemDidPlayToEndTimeNotification object:self.timerPlayer.currentItem];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//移除监听</span><br><span class="line">- (void)removeObserverForPlayerItem</span><br><span class="line">&#123;</span><br><span class="line">    [self.timerPlayer.currentItem removeObserver:self forKeyPath:@&quot;status&quot;];</span><br><span class="line">    [self.timerPlayer.currentItem removeObserver:self forKeyPath:@&quot;loadedTimeRanges&quot;];</span><br><span class="line">    [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.timerPlayer.currentItem];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码利用KVO属性监听了<code>status</code>和<code>loadedTimeRanges</code>属性,并添加了<code>AVPlayerItemDidPlayToEndTimeNotification</code>通知;<code>status</code>是对player的状态的枚举值,当<code>status = readytoplay</code>时候才能播放资源或进行其他的界面处理,<code>loadedTimeRanges</code>的属性监听可以获得当前资源的缓冲进度.下面是对属性监听后的操作示例和收到<code>AVPlayerItemDidPlayToEndTimeNotification</code>通知后执行的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSKeyValueChangeKey,id&gt; *)change context:(void *)context</span><br><span class="line">&#123;</span><br><span class="line">    if ([keyPath isEqualToString:@&quot;status&quot;]) &#123;</span><br><span class="line">        int status = ((NSNumber *)change[@&quot;new&quot;]).intValue;</span><br><span class="line">        if (status == AVPlayerStatusReadyToPlay) &#123;</span><br><span class="line">            //进行相应的界面处理</span><br><span class="line">            NSLog(@&quot;hehehheeh&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;else if ([keyPath isEqualToString:@&quot;loadedTimeRanges&quot;])&#123;</span><br><span class="line">        NSArray *array = self.timerPlayer.currentItem.loadedTimeRanges;</span><br><span class="line">        CMTimeRange timeRanges = [array.firstObject CMTimeRangeValue];</span><br><span class="line">        float startSeconds =  CMTimeGetSeconds(timeRanges.start);</span><br><span class="line">        float durationSeconds = CMTimeGetSeconds(timeRanges.duration);</span><br><span class="line">        //获取缓冲时间</span><br><span class="line">        float bufferTime = startSeconds + durationSeconds;</span><br><span class="line">        NSLog(@&quot;%f&quot;,bufferTime);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)itemDidFinishPlaying</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@&quot;终于完事了&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>完成了上面这些代码,基本能够满足产品对于播放音乐的需求了.但是考虑到配置的提示音并不长,所以领导希望音频缓存到本地后再进行播放,所以接下来需要下载音乐文件</p>
+<h2 id="下载文件"><a href="#下载文件" class="headerlink" title="下载文件"></a>下载文件</h2><p>1.设置本地文件的存储路径</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> 下载后的音频存放路径</span><br><span class="line"></span><br><span class="line"> @param fileName         文件名称</span><br><span class="line"> @param isFileExistBlock 回调</span><br><span class="line"> */</span><br><span class="line">- (void)audioFilePath:(NSString *)fileName</span><br><span class="line">          isFileExist:(void(^)(BOOL isExist, NSString*savePath))isFileExistBlock</span><br><span class="line">&#123;</span><br><span class="line">    NSString *cachePath=[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];</span><br><span class="line">    </span><br><span class="line">    NSString *savePath=[cachePath stringByAppendingPathComponent:[NSString stringWithFormat:@&quot;audio_%@&quot;,fileName]];</span><br><span class="line">    NSLog(@&quot;%@&quot;,savePath);</span><br><span class="line">    </span><br><span class="line">    //首先判断当前路径是否存在</span><br><span class="line">    NSFileManager *fileManager = [NSFileManager defaultManager];</span><br><span class="line">    BOOL isPathExist = [fileManager fileExistsAtPath:savePath];</span><br><span class="line">    if (isPathExist)</span><br><span class="line">    &#123;</span><br><span class="line">        //存在相同的文件</span><br><span class="line">        if (isFileExistBlock) &#123; isFileExistBlock(YES, savePath); &#125;</span><br><span class="line"></span><br><span class="line">    &#125;else</span><br><span class="line">    &#123;</span><br><span class="line">        if (isFileExistBlock) &#123; isFileExistBlock(NO, savePath); &#125;</span><br><span class="line">        //判断当前路径下文件个数,个数大于5时,删除文件</span><br><span class="line">        NSArray *array = [fileManager contentsOfDirectoryAtPath:savePath error:nil];</span><br><span class="line">        if (array.count &gt; 4)</span><br><span class="line">        &#123;</span><br><span class="line">            [fileManager removeItemAtPath:savePath error:nil];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这部分代码做了一个对缓存文件的简单判断:当缓存文件已经存在的时候,返回标识符YES;缓存文件数量大于4时删除沙盒中的文件</p>
+<p>2.下载资源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> 根据链接地址下载音频</span><br><span class="line"></span><br><span class="line"> @param urlString 下载</span><br><span class="line"> @param block     block</span><br><span class="line"> */</span><br><span class="line">- (void)downLoadAudioWithUrlString:(NSString *)urlString</span><br><span class="line">                     downloadBlock:(DownloadAudioFinishBlock)block</span><br><span class="line">&#123;</span><br><span class="line">   // NSURL *soundURL = [NSURL URLWithString:@&quot;http://yinyueshiting.baidu.com/data2/music/122873158/4904681476817261128.mp3?xcode=1276ea4c54f0c8f829676627b54cb918&quot;];</span><br><span class="line">    NSURL *soundURL = [NSURL URLWithString:urlString];</span><br><span class="line"></span><br><span class="line">    NSLog(@&quot;soundURL:%@&quot;,soundURL);</span><br><span class="line">    </span><br><span class="line">    //将路径拆分成array,然后保存文件名称</span><br><span class="line">    NSArray *seperateArray = [urlString componentsSeparatedByString:@&quot;/&quot;];</span><br><span class="line">    NSString *fileName = seperateArray.lastObject;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    [self audioFilePath:fileName isFileExist:^(BOOL isExist, NSString *savePath)</span><br><span class="line">     &#123;</span><br><span class="line">         //存在文件</span><br><span class="line">         if (isExist)&#123;</span><br><span class="line">             if (block) &#123; block(savePath, nil);&#125;</span><br><span class="line">         &#125;</span><br><span class="line">         //不存在文件</span><br><span class="line">         else</span><br><span class="line">         &#123;</span><br><span class="line">             //创建网络请求</span><br><span class="line">             NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:soundURL];</span><br><span class="line">             NSURLSession *session  = [NSURLSession sharedSession];</span><br><span class="line">             </span><br><span class="line">             //根据链接地址下载音频到指定地址</span><br><span class="line">             NSURLSessionDownloadTask *downloadTask = [session downloadTaskWithRequest:theRequest completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) &#123;</span><br><span class="line">                 if (!error) &#123;</span><br><span class="line">                     </span><br><span class="line">                     //注意location是下载后的临时保存路径,需要将它移动到需要保存的位置</span><br><span class="line">                     </span><br><span class="line">                      NSError *saveError;</span><br><span class="line">                      //存储文件</span><br><span class="line">                      NSURL *saveUrl=[NSURL fileURLWithPath:savePath];</span><br><span class="line">                      [[NSFileManager defaultManager] copyItemAtURL:location toURL:saveUrl error:</span><br><span class="line">                       &amp;saveError];</span><br><span class="line">                      if (!saveError) &#123;</span><br><span class="line">                          NSLog(@&quot;save sucess.&quot;);</span><br><span class="line">                          if (block) &#123; block(savePath, nil);&#125;</span><br><span class="line">                      &#125;else&#123;</span><br><span class="line">                          NSLog(@&quot;error is :%@&quot;,saveError.localizedDescription);</span><br><span class="line">                          if (block) &#123; block(nil, saveError);&#125;</span><br><span class="line">                      &#125;</span><br><span class="line">                 </span><br><span class="line">                 &#125;else&#123;</span><br><span class="line">                     NSLog(@&quot;error is :%@&quot;,error.localizedDescription);</span><br><span class="line">                     </span><br><span class="line">                     if ([error.localizedDescription containsString:@&quot; already exists&quot;]) &#123;</span><br><span class="line">                         if (block) &#123; block(savePath, nil);&#125;</span><br><span class="line">                     &#125;else&#123;</span><br><span class="line">                         if (block) &#123; block(nil, error);&#125;</span><br><span class="line"></span><br><span class="line">                     &#125;</span><br><span class="line">                 &#125;</span><br><span class="line">                 </span><br><span class="line">             &#125;];</span><br><span class="line">             [downloadTask resume];</span><br><span class="line"></span><br><span class="line">         &#125;</span><br><span class="line">     &#125;];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码中的url是从百度中找到的音乐下载地址,这里下载音乐和文件是一样的,如果网速太慢,建议找个短点的音乐或者文件之类.此处存放音乐的名称为url截取的一部分. 这样下载文件就完成啦.</p>
+<p><a href="https://github.com/XQ0820/PlayAudio" target="_blank" rel="external">上面文章的代码放在这里了:</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>之前听李笑来老师的讲座,他提到”输出能够有效地推动输入”. 自己写这篇文章略略能感受到这一点,平时读别人的技术博客总是3~5分钟就看过去了,现在想想应该好好感谢所有给自己提供过帮助的博客.有了谷歌,就好像拥有整个宇宙,也希望能通过博客的形式给自己增加一些新鲜的感受,和多一些进步.</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p>Hale’s Blog: <a href="http://wuqiuhao.github.io/2016/04/05/iOS%E8%A7%86%E9%A2%91%E3%80%81%E9%9F%B3%E9%A2%91%E6%92%AD%E6%94%BE/" target="_blank" rel="external">http://wuqiuhao.github.io/2016/04/05/iOS%E8%A7%86%E9%A2%91%E3%80%81%E9%9F%B3%E9%A2%91%E6%92%AD%E6%94%BE/</a><br>iOS 音频播放 —— 离线歌曲:<a href="http://www.jianshu.com/p/2fdc6a9142c4" target="_blank" rel="external">http://www.jianshu.com/p/2fdc6a9142c4</a><br>码农人生音频播放系列(大神的文章牛牛哒!):<a href="http://msching.github.io/blog/2014/07/08/audio-in-ios-2/" target="_blank" rel="external">http://msching.github.io/blog/2014/07/08/audio-in-ios-2/</a><br>AVAudioPlayer,AVPlayer以及系统音频:<a href="http://www.jianshu.com/p/e5dbd92871a4" target="_blank" rel="external">http://www.jianshu.com/p/e5dbd92871a4</a><br>iOS音频篇：使用AVPlayer播放网络音乐:<a href="http://www.jianshu.com/p/32b932f44c9b" target="_blank" rel="external">http://www.jianshu.com/p/32b932f44c9b</a><br>iOS Programming 101: Record and Play Audio using AVFoundation Framework:<a href="https://www.appcoda.com/ios-avfoundation-framework-tutorial/" target="_blank" rel="external">https://www.appcoda.com/ios-avfoundation-framework-tutorial/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/10/24/iOS-播放本地音频/" data-id="ciwua2w910002k0ux1w7i27ec" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/12/16/发烧以后/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          发烧以后 ^_^
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">iOS10用户通知框架(User Notifications)简介(翻译)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/12/18/艰难的第二记/">艰难的第二记</a>
+          </li>
+        
+          <li>
+            <a href="/2016/12/16/发烧以后/">发烧以后 ^_^</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/24/iOS-播放本地音频/">iOS 播放本地音频</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/">iOS10用户通知框架(User Notifications)简介(翻译)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/09/21/在Xcode7中使用Swift进行单元测试/">在Xcode7中使用Swift进行单元测试</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 Summer<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
