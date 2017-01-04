@@ -53,7 +53,7 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Søk"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -63,6 +63,85 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-在Xcode7中使用Swift进行单元测试" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/21/在Xcode7中使用Swift进行单元测试/" class="article-date">
+  <time datetime="2016-09-21T02:16:17.000Z" itemprop="datePublished">2016-09-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/09/21/在Xcode7中使用Swift进行单元测试/">在Xcode7中使用Swift进行单元测试</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>iOS 程序员经常需要debug自己的app,除非你是那种疯狂的程序大神,不然一定体会过几个小时几个小时找Bug最后却发现只是变量声明有误时候那种绝望的心情.比这更糟糕的是,几个小时也没找到Bug的原因. 无论你是程序新人还是开发过许多app的程序员,规范的编写单元测试能够使代码更可靠,安全且容易检查.</p>
+<p>幸运的是,Xcode7和Swift支持单元测试.虽然写了单元测试并不代表程序没Bug, 它仍然是检查代码片段按预期执行并使debug容易些的相当有效的方法.</p>
+<p>如名字那样,在单元测试中,会对指定的代码片段建立小的有针对性的测试函数,以确保每段代码都可以通过测试.如果测试通过,在函数旁边会出现绿色的标志.如果测试没有通过,无论失败原因是什么,Xcode都会将代码标记为失败.这表示你需要在代码中查找产生错误的原因</p>
+<h2 id="Demo概览"><a href="#Demo概览" class="headerlink" title="Demo概览"></a>Demo概览</h2><p>首先,在<a href="http://www.appcoda.com/unit-testing-swift/" target="_blank" rel="external">这里</a>下载我已经创建好的工程,这是个简单的用数值和百分比进行百分比计算的应用.(exp:10% * 80 = 8)</p>
+<p>这个百分比计算器相当简单.你主要看ViewController.swift这个文件, 文件中的代码注释的很通俗易懂.</p>
+<p>工程中一共有5对关联关系:每一个关系对应界面上的一个UI元素,除标题外,还有俩个IBActions对应俩个Slider,每个IBAction的名称准确解释了这个方法需要执行的动作.当俩个滑块中的任一个改变时,百分比和数值跟着一起改变</p>
+<p>此外,还有俩个简单的函数 <code>updateLabels()</code> 和 <code>percentage()</code> 用来执行你想要完成的动作:第一个函数更新滑块滑动时展示的数值,第二个函数传入俩个浮点型数值并返回百分比计算结果.</p>
+<p>在模拟器中运行app. 刚开始时候,一切正常.但只要你开始更新数值,就会发现计算结果不对.为了找到这个Bug,我们可以将代码分成几个单元并分开测试以检查各部分是否按照预期执行. 这样做并不会解决Bug, 但能够缩小你找Bug的范围.</p>
+<p><img src="/img/unit-test-demo-app.png" alt="unit-test-demo-app"></p>
+<p>创建工程时,我选了默认包含测试文件.(如果你想手动添加文件,在iOS资源文件中依次点击 File &gt; New &gt; File &gt; Unit Test Case).此处,测试文件已经由Xcode建好,可以在 导航器的<code>PercentageCalculatorTests</code> 文件夹中找到<br><img src="/img/xcode-unit-test-option.png" alt="xcode-unit-test-option"></p>
+<p>在<code>PercentageCalculatorTests.swift</code>文件中,类 <code>PercentageCalculatorTests</code> 里面已经创建了4个方法. 其中俩个是示例,可以删除(可以通过关键字<code>test</code>找到,并且在方法的序号列左侧有个方块形icon,名称以 <code>Example</code> 结尾).另俩个函数: <code>setUp()</code> 和 <code>tearDown()</code> 是专门用于测试的,在测试方法执行前后会依次调用.</p>
+<h2 id="开始编写单元测试"><a href="#开始编写单元测试" class="headerlink" title="开始编写单元测试"></a>开始编写单元测试</h2><p>现在,将要开始写你的第一个单元测试!这个教程中,只测试类 <code>ViewController</code> . 我们需要在 <code>PercentageCalculatorTests</code> 添加一个实例.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class PercentageCalculatorTests: XCTestCase &#123;</span><br><span class="line">    var vc: ViewController!</span><br><span class="line">    </span><br><span class="line">    override func setUp() &#123;</span><br><span class="line">        super.setUp()</span><br><span class="line">        // Put setup code here. This method is called before the invocation of  each test method in the class.</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func tearDown() &#123;</span><br><span class="line">        // Put teardown code here. This method is called after the invocation of each test method in the class.</span><br><span class="line">        super.tearDown()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>类 <code>PercentageCalculatorTests</code> 继承于 <code>XCTestCase</code>. 它包含了 <code>XCTest</code>框架. 每个<code>XCTestCase</code> 子类的实例负责测试工程中指定的一部分,例如一个特殊的特点.</p>
+<p>因为 <code>setup</code> 在所有测试方法之前调用, 在<code>setup</code>方法中初始化 <code>vc</code> , 这样可以在每个测试方法中获得一个新的 <code>ViewController</code> 实例. 像下面的代码一样更新 <code>setUp</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">override func setUp() &#123;</span><br><span class="line">    super.setUp()</span><br><span class="line"> </span><br><span class="line">    let storyboard = UIStoryboard(name: &quot;Main&quot;, bundle: NSBundle.mainBundle())</span><br><span class="line">    vc = storyboard.instantiateInitialViewController() as! ViewController</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>记住所有的测试方法都以关键字 <code>test</code> 开头,否则Xcode不识别. 添加一个新方法 <code>testPercentageCalculator</code> 用来确认 <code>ViewController</code> 中的<code>percentage()</code>方法是否正常运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func testPercentageCalculator() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在单元测试时要检查某一大块代码是否正常运行. 这一大块代码通常只需要几行典型的代码来测试,你只测试一个方法或函数. 单元测试通过给一部分代码提供一个入参,用这个执行代码,然后检查返回参数是不是与我们预期的相符合<br><img src="/img/Example.png" alt="Example"></p>
+<p>比较我们预期结果是否正确这部分由 <code>XCTAssert</code>函数完成. 最简单的<code>XCTAssert</code> 函数为<code>XCTAssert(expression: BooleanType)</code>,需要传入BOOL表达式(exp: <code>5 &gt; 3</code>, <code>8.90 == 8.90</code> or <code>true</code>),函数返回真或假使得测试通过.</p>
+<p>快来试试吧!首先,在方法<code>testPercentageCalculator()</code>中加入下面这行.然后,将鼠标移动到方法名左边的菱形块图标处,鼠标来回移动,icon变成一个可运行的icon然后点击开始测试.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func testPercentageCalculator() &#123;</span><br><span class="line">        XCTAssert(true)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果运行顺利,测试通过,方法旁边出现一个绿色的对号.<br><img src="/img/unit-test-green-mark.png" alt="unit-test-green-mark"></p>
+<h2 id="检查百分比计算结果"><a href="#检查百分比计算结果" class="headerlink" title="检查百分比计算结果"></a>检查百分比计算结果</h2><p>现在开始动真格了:测试<code>percentage()</code>方法. 通过 <code>vc</code>属性调用这个方法, <code>vc</code>是<code>ViewController</code> 的一个实例. 传俩个浮点值 50 和 50 ,用静态值<code>p</code>保存结果. 在这里, <code>p</code>应该等于25 (50 * 50% = 25),检查这个用例 <code>XCTAssert(p == 25)</code>并执行测试方法. 用下面的代码替换<code>testPercentageCalculator()</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">func testPercentageCalculator() &#123;</span><br><span class="line">        // Should be 25</span><br><span class="line">        let p = vc.percentage(50, 50)</span><br><span class="line">        XCTAssert(p == 25)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试通过,意味着<code>ViewController</code> 的 函数 <code>percentage()</code>正常执行, 需要在其他地方找    bug原因. 可能在 <code>updateLabels()</code> 方法中</p>
+<h2 id="检查Label"><a href="#检查Label" class="headerlink" title="检查Label"></a>检查Label</h2><p>添加一个新的测试方法 <code>testLabelValuesShowedProperly()</code> 用来检查Label上的内容是否正确.然后从ViewController中调用方法 <code>updateLabels()</code>,这次, 我们检查每个Label上的text属性和我们想要展示的东西是否相符.</p>
+<p>记得你给 <code>XCTAssert</code>函数一个新的参数:字符串消息. 这样很方便,因为我们有多个(调用<code>XCTAssert</code>三次)需要完成检测的值. 如果测试不成功,这个消息会告诉我们到底哪里有问题.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func testLabelValuesShowedProperly() &#123;</span><br><span class="line">        vc.updateLabels(Float(80.0), Float(50.0), Float(40.0))</span><br><span class="line">        </span><br><span class="line">        // The labels should now display 80, 50 and 40</span><br><span class="line">        XCTAssert(vc.numberLabel.text == &quot;80.0&quot;, &quot;numberLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.percentageLabel.text == &quot;50.0%&quot;, &quot;percentageLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.resultLabel.text == &quot;40.0&quot;, &quot;resultLabel doesn&apos;t show the right text&quot;)</span><br></pre></td></tr></table></figure>
+<p>当你要执行这个方法时,你会得到<code>numberLabel</code>,<code>percentageLabel</code>,<code>resultsLabel</code>为<code>nil</code>的错误信息.这怎么可能?</p>
+<p>这是因为我在Storyboard文件中创建的Label,因此他们仅在视图加载时调用一次.但是单元测试中<code>loadView()</code>方法永不执行, 所以Label没有被创建他们都是<code>nil</code>. 这个问题有一个解决办法是调用<code>vc.loadView()</code> ,但苹果在官方文档中不建议这样做,因为视图已经加载后再加载一遍可能会引起内存泄漏.</p>
+<p>你应该获得<code>vc</code>的属性<code>view</code>,他会按顺序触发需要的方法,而不仅仅是<code>loadView()</code>.在<code>testLabelValuesShowedProperly()</code>中更新代码.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func testLabelValuesShowedProperly() &#123;</span><br><span class="line">        let _ = vc.view</span><br><span class="line">        vc.updateLabels(Float(80.0), Float(50.0), Float(40.0))</span><br><span class="line">        </span><br><span class="line">        // The labels should now display 80, 50 and 40</span><br><span class="line">        XCTAssert(vc.numberLabel.text == &quot;80.0&quot;, &quot;numberLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.percentageLabel.text == &quot;50.0%&quot;, &quot;percentageLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.resultLabel.text == &quot;40.0&quot;, &quot;resultLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用下滑线(_)默认一个常量名称,因为我们并不需要这个view而且也不会用到它.它只是告诉编译器”假装获得了这个视图并触发方法”</p>
+<p>执行这个测试(如果你想执行测试类中的所有方法,你可以点击<code>class PercentageCalculatorTests</code>旁边的方形)<br><img src="/img/unit-test-demo-fail.png" alt="unit-test-demo-fai"></p>
+<h2 id="修复Bug"><a href="#修复Bug" class="headerlink" title="修复Bug"></a>修复Bug</h2><p>如你所见,测试失败!具体的错误信息可以帮助我们确定可能引起Bug的原因. 结果告诉我们resultsLabel没有返回正确的text.让我们进到ViewController检查这些Label的是怎么被赋值的.在深入检查<code>ViewController.swift</code> 中的<code>updateLabels()</code>代码后,可以发现因为Bug的原因:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.resultLabel.text = &quot;\(rV + 10)&quot;</span><br></pre></td></tr></table></figure>
+<p>应该为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.resultLabel.text = &quot;\(rV)&quot;</span><br></pre></td></tr></table></figure>
+<p>更新代码然后再次测试.万事顺利!</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在这个教程中,学习了Xcode中的单元测试以及单元测试怎么帮助你在代码中找到Bug.除了减少Bug,单元测试能用来性能测试和异步测试. 其他吸引人的部分是UI测试,能通过记录动作在app中还原真实场景的表现.如果这听起来很有意思,你真该好好看看<a href="https://developer.apple.com/videos/play/wwdc2015-406/" target="_blank" rel="external">这部分关于UI测试的视频</a></p>
+<p>完整代码,可以在<a href="https://github.com/appcoda/SwiftUnitTestDemo" target="_blank" rel="external">这里下载</a></p>
+<p><strong>原文链接</strong>: <a href="http://www.appcoda.com/unit-testing-swift/" target="_blank" rel="external">http://www.appcoda.com/unit-testing-swift/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/21/在Xcode7中使用Swift进行单元测试/" data-id="cixioek8i00064kux9de7tr1v" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-HealthKit-使用笔记-一" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -136,7 +215,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/08/05/HealthKit-使用笔记-一/" data-id="cixhbji08000bskuxw2z109mc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/08/05/HealthKit-使用笔记-一/" data-id="cixioek98000a4kuxxcy1qesx" class="article-share-link">Share</a>
       
       
     </footer>
@@ -191,7 +270,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/08/02/绘制尾部带有圆圈的圆环/" data-id="cixhbji2e000kskuxs53g82zy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/08/02/绘制尾部带有圆圈的圆环/" data-id="cixioek9n000f4kux5nbep6rs" class="article-share-link">Share</a>
       
       
     </footer>
@@ -220,7 +299,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Arkiv</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li></ul>
     </div>
@@ -230,9 +309,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Siste innlegg</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2017/01/04/最坏的结果/">最坏的结果</a>
+          </li>
         
           <li>
             <a href="/2017/01/03/站着打盹的人/">站着打盹的人</a>
@@ -248,10 +331,6 @@
         
           <li>
             <a href="/2016/12/30/零心/">零心</a>
-          </li>
-        
-          <li>
-            <a href="/2016/12/28/大众面前的吐槽/">大众面前的吐槽</a>
           </li>
         
       </ul>
