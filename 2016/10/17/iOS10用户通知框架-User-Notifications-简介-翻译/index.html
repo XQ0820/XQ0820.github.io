@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>iOS10用户通知框架(User Notifications)简介(翻译) | Summer Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文链接: http://www.appcoda.com/ios10-user-notifications-guide/
+大家好,欢迎来到iOS10教程的通知指南. 今天,我们将聊一下在iOS10系统中如何实现通知. iOS10的通知API新增和修改了许多特性,包括基于触发器(triggers)的牛掰的请求系统,详细内如会在下文中详细讨论.iOS10通知中最大的改变是UserNotificatio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS10用户通知框架(User Notifications)简介(翻译)">
+<meta property="og:url" content="http://yoursite.com/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/index.html">
+<meta property="og:site_name" content="Summer Blog">
+<meta property="og:description" content="原文链接: http://www.appcoda.com/ios10-user-notifications-guide/
+大家好,欢迎来到iOS10教程的通知指南. 今天,我们将聊一下在iOS10系统中如何实现通知. iOS10的通知API新增和修改了许多特性,包括基于触发器(triggers)的牛掰的请求系统,详细内如会在下文中详细讨论.iOS10通知中最大的改变是UserNotificatio">
+<meta property="og:image" content="http://yoursite.com/img/14764273540293.png">
+<meta property="og:image" content="http://yoursite.com/img/14764376688190.jpg">
+<meta property="og:image" content="http://yoursite.com/img/14764388175933.png">
+<meta property="og:image" content="http://yoursite.com/img/14764404214267.png">
+<meta property="og:updated_time" content="2016-10-17T02:49:53.033Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS10用户通知框架(User Notifications)简介(翻译)">
+<meta name="twitter:description" content="原文链接: http://www.appcoda.com/ios10-user-notifications-guide/
+大家好,欢迎来到iOS10教程的通知指南. 今天,我们将聊一下在iOS10系统中如何实现通知. iOS10的通知API新增和修改了许多特性,包括基于触发器(triggers)的牛掰的请求系统,详细内如会在下文中详细讨论.iOS10通知中最大的改变是UserNotificatio">
+<meta name="twitter:image" content="http://yoursite.com/img/14764273540293.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Summer Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Summer Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="w-iOS10用户通知框架-User-Notifications-简介-翻译" class="article article-type-w" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/" class="article-date">
+  <time datetime="2016-10-17T02:27:24.000Z" itemprop="datePublished">2016-10-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS10用户通知框架(User Notifications)简介(翻译)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>原文链接</strong>: <a href="http://www.appcoda.com/ios10-user-notifications-guide/" target="_blank" rel="external">http://www.appcoda.com/ios10-user-notifications-guide/</a></p>
+<p>大家好,欢迎来到iOS10教程的通知指南. 今天,我们将聊一下在iOS10系统中如何实现通知. iOS10的通知API新增和修改了许多特性,包括基于触发器(triggers)的牛掰的请求系统,详细内如会在下文中详细讨论.<br>iOS10通知中最大的改变是<code>UserNotificationsUI</code>的框架,它可以在通知中自定义视图控制器.这就允许创建许多之前系统中完全不可能的很有用的各种通知</p>
+<h2 id="简单的用户通知"><a href="#简单的用户通知" class="headerlink" title="简单的用户通知"></a>简单的用户通知</h2><p>我们想要展示的通知并不全是精致且可交互的.因此,接下来开始演示怎么建立一个基本的文本通知.下载<a href="https://github.com/appcoda/NotificationsUI-Demo/raw/master/NotificationsUI.zip" target="_blank" rel="external">初始工程</a>并打开 <code>NotificationsUI.xcodeproj</code>. 看一下整个工程,你会发现什么都没有:我们用 <code>Main.storyboard</code> 结合 <code>ViewController.swift</code> 和 <code>AppDelegate.swift</code> 进行用户交互<br><img src="/img/14764273540293.png" alt=""></p>
+<p>打开 <code>Main.storyboard</code> 看一下 <code>ViewController</code> 文件. 今天我们做的这个apple用来提醒用户上网月度AppCoda的文章.它让用户选择需要通知的日期和时间.首先对这个app做一简单的修改:启用通知. 目前选择时间和日期一点用都没有.我们将要更新这个app,使得它在设置时间和日期后在指定时间创建通知.</p>
+<p>继续打开 <code>ViewController.swift</code> 让我们开始吧.</p>
+<p>当你打开 <code>ViewController.swift</code> 时, 你会发现文件很空. 只有一个在时间选择器选择了新的时间后,会被调用的功能函数<code>datePickerDidSelectNewDate</code>.像前面提到的,现在这个app除了创建通之外什么都没做. 让我们来实现这个功能</p>
+<p>在iOS10中创建通知的过程有一点变化.开发人员现在必须创建<em>requests</em>,向iOS请求展示通知.这些请求包括俩部分: <em>triggers</em> 和 <em>content</em> (触发器和内容).一个触发器是一系列发送通知所必须满足的条件.为了在iOS10中显示一个通知,首先从触发器开始.我们使用的基于时间的触发器的类是<code>UNCalendarNotificationTrigger</code>. Apple提供了也提供了其他的类,例如 <code>UNLocationNotificationTrigger</code> (当用户到达指定地点时触发通知)</p>
+<p>像上面声明的: 在iOS中展示通知的第一步是创建一个触发器.现在,让我们继续并且创建一个触发器.</p>
+<p>打开 <code>AppDelegate.swift</code>, 确保已经导入了 <code>UserNotification</code>框架, 所有通知相关的API都在这个框架里面:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import UserNotifications</span><br></pre></td></tr></table></figure>
+<p>接下来,添加函数<code>scheduleNotification(at date: Date)</code>.名如其义,这个函数负责在提供的日期内定制一个通知</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">func scheduleNotification(at date: Date) &#123;</span><br><span class="line">    let calendar = Calendar(identifier: .gregorian)</span><br><span class="line">    let components = calendar.dateComponents(in: .current, from: date)</span><br><span class="line">    let newComponents = DateComponents(calendar: calendar, timeZone: .current, month: components.month, day: components.day, hour: components.hour, minute: components.minute)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的代码中, 使用 <code>Gregorian</code> 日历将提供的日期分成几个组件.日期与组件不在这个教程的范围内,但需要知道一个日期由组件组成.单独展示日期的组件,例如小时,分钟,秒等.刚才的代码将时间拆分成组件并保存在 <code>components</code> 常量中.这样做是因为执行 <code>UNCalendarNotificationTrigger</code> 需要日期组件而不是日期. 然而, <code>UNCalendarNotificationTrigger</code>比较诡异的一点是直接从日期中取出完整的组件并不能使用, 而需要从已存在的实例中读取信息创建自己的 <code>DateComponents</code> 实例. 第三行代码就是做这个的:它只是从 <code>date</code> 中获取了相关信息创建了新的 <code>DateComponents</code> 实例.</p>
+<p>现在有了 <code>date</code> 的组件, 继续啊创建日历通知触发器. 像在iOS中的其他东西一样, <em>Apple</em>使这个创建过程相当简单. 只需要将下面的代码加入函数中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let trigger = UNCalendarNotificationTrigger(dateMatching: newComponents, repeats: false)</span><br></pre></td></tr></table></figure></p>
+<p>跟预想的一样,这行代码用时间组件创建了新的 <code>UNCalendarNotificationTrigger</code>. 因为只需要通知出现一次,将<code>repeats</code>设置为 <code>false</code>.</p>
+<p>现在已经创建完触发器,接下来的就是创建需要在通知中展示的 <em>content</em>. 这可以通过 <code>UNMutableNotificationContent</code> 类完成. 将下面几行代码放在 <code>trigger</code> 变量的下面创建通知内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let content = UNMutableNotificationContent()</span><br><span class="line">content.title = &quot;Tutorial Reminder&quot;</span><br><span class="line">content.body = &quot;Just a reminder to read your tutorial over at appcoda.com!&quot;</span><br><span class="line">content.sound = UNNotificationSound.default()</span><br></pre></td></tr></table></figure>
+<p>这些代码就能理解其含义:我们创建了一个新的 <code>UNMutableNotificationContent</code> 实例, 然后设置它的标题, 内容, 声音.</p>
+<p>看起来好像我们已经准备好展示第一个通知了. 然而,还剩俩步需要完成:1.创建通知<em>request</em>, 2.将它提供给系统,告诉iOS展示通知.</p>
+<p>为了创建通知请求,用相关的内容和触发器初始化一个 <code>UNNotificationRequest</code> 对象.还需要一个唯一标识码用来识别这个通知请求. 在 <code>scheduleNotification</code>函数中插入下面这行代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let request = UNNotificationRequest(identifier: &quot;textNotification&quot;, content: content, trigger: trigger)</span><br></pre></td></tr></table></figure></p>
+<p>很简单,对么?创建请求需要3个参数:</p>
+<ul>
+<li><code>identifier</code>: 这是我们请求的唯一标识.你很快就会看到,这个标识能用来取消通知请求.</li>
+<li><code>content</code>: 这是之前创建的通知内容</li>
+<li><code>trigger</code>: 这个触发器用来触发通知.当满足触发条件后,iOS将会展示这个通知</li>
+</ul>
+<p>好了,现在要做的最后一件事是将请求添加进管理整个app所有通知的通知中心.通知中心会根据合适的时间触发通知.</p>
+<p>将通知请求加入通知中心之前,最好先将已经存在的通知请求移除, 这样能够避免重复通知. 将下面的代码段加入函数中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">UNUserNotificationCenter.current().removeAllPendingNotificationRequests()</span><br><span class="line">UNUserNotificationCenter.current().add(request) &#123;(error) in</span><br><span class="line">    if let error = error &#123;</span><br><span class="line">        print(&quot;Uh oh! We had an error: \(error)&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一行代码得到通知中心的单例并调用 <code>removeAllPendingNotificationRequests</code> 方法移除所有挂起的通知请求.然后将请求加入通知中心.这个方法也在函数完成后也会调用.在我们实现中,这个控制器用来打印错误. 在继续操作之前, 确保 <code>scheduleNotification</code> 函数如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">func scheduleNotification(at date: Date) &#123;</span><br><span class="line">    let calendar = Calendar(identifier: .gregorian)</span><br><span class="line">    let components = calendar.dateComponents(in: .current, from: date)</span><br><span class="line">    let newComponents = DateComponents(calendar: calendar, timeZone: .current, month: components.month, day: components.day, hour: components.hour, minute: components.minute)</span><br><span class="line">    </span><br><span class="line">    let trigger = UNCalendarNotificationTrigger(dateMatching: newComponents, repeats: false)</span><br><span class="line">    </span><br><span class="line">    let content = UNMutableNotificationContent()</span><br><span class="line">    content.title = &quot;Tutorial Reminder&quot;</span><br><span class="line">    content.body = &quot;Just a reminder to read your tutorial over at appcoda.com!&quot;</span><br><span class="line">    content.sound = UNNotificationSound.default()</span><br><span class="line">    </span><br><span class="line">    let request = UNNotificationRequest(identifier: &quot;textNotification&quot;, content: content, trigger: trigger)</span><br><span class="line">    </span><br><span class="line">    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()</span><br><span class="line">    UNUserNotificationCenter.current().add(request) &#123;(error) in</span><br><span class="line">        if let error = error &#123;</span><br><span class="line">            print(&quot;Uh oh! We had an error: \(error)&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果代码和上面的一样,准备出发吧! 现在我们需要做的是在 <code>ViewController.swift</code>中配置当用户选择时间后调用<code>scheduleNotification(date:)</code> .在 <code>ViewController.swift</code>中,将下面的代码加入<code>datePickerDidSelectNewDate</code> 方法中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let selectedDate = sender.date</span><br><span class="line">let delegate = UIApplication.shared.delegate as? AppDelegate</span><br><span class="line">delegate?.scheduleNotification(at: selectedDate)</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码获取到了当前应用正在使用的的<code>AppDelegate</code>实例并用之前写的的函数定制通知.快来试试吧!运行app并选择未来的时间.等到设备时间到选择时间后看看发生了什么!</p>
+<p>呃,通知没出现,但是为什么呢?</p>
+<p>这有一些通知没出现的原因.</p>
+<p>首先,苹果致力于在iOS上保持一个完美的用户体验,体验的一部分是给用户提供从app内接受通知的控制权限.用户还没有授权展示通知,这就是为什么通知没有展现的原因.</p>
+<p>让我们修复这个问题.将下面的代码加入 <code>AppDelegate.swift</code>的方法中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -&gt; Bool &#123;</span><br><span class="line">    </span><br><span class="line">    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) &#123;(accepted, error) in</span><br><span class="line">        if !accepted &#123;</span><br><span class="line">            print(&quot;Notification access denied.&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里我们调用通知中心的<code>requestAuthorization</code>方法来获得用户使用通知的许可.我们也请求展示<br>告警和声音的能力.</p>
+<p>现在重新运行app.当app加载后,你会看见授权请求.确保你同意,然后app能够向设备发送通知.</p>
+<p>另一件你需要记住的是,这个通知不会再app内展示.因此,一旦你设置了日期,确保你返回主屏幕并锁屏.<br>如果所有步骤都准确无误,通知就会出现啦!<br><img src="/img/14764376688190.jpg" alt=""></p>
+<p>看见没? 向iOS用户发送通知没那么难, 只需要先执行一些预提示的步骤,例如请求通知权限.现在已经发送了简单的文本,让我们再加一张图片!</p>
+<h2 id="在通知中附加图片"><a href="#在通知中附加图片" class="headerlink" title="在通知中附加图片"></a>在通知中附加图片</h2><p>这个通知现在是基于文本.这没啥新鲜的! 让我们探索一下其他的特征,类似于在通知中展示图片.</p>
+<p>在初始工程中,我已经绑定了一张图片:名为 <code>logo.png</code> .如果你没看见,可能是因为它隐藏在<code>NotificationsUI</code>组中了. 无论怎样,这张图片在初始工程中. 让我们来看一下怎么将它展示在通知中.</p>
+<p><code>UserNotification</code> 框架为开发者提供了<code>UNNotificationAttachment</code>类,用来在通知中添加附件.附件可以是录音,图片和音频.他也支持许多文件格式. 更详细的信息可见看<a href="https://developer.apple.com/reference/usernotifications/unnotificationattachment" target="_blank" rel="external"> Apple Developer Website</a></p>
+<p>建立一个附件相当简单,像<code>UserNotifications.framework</code> 中的大多数任务一样. 我们只需要初始化<code>UNNotificationAttachment</code> 实例并把它加到通知内容中.更新 <code>scheduleNotification</code>方法并将下面的代码块插入在<code>request</code>变量前面.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if let path = Bundle.main.path(forResource: &quot;logo&quot;, ofType: &quot;png&quot;) &#123;</span><br><span class="line">    let url = URL(fileURLWithPath: path)</span><br><span class="line">    </span><br><span class="line">    do &#123;</span><br><span class="line">        let attachment = try UNNotificationAttachment(identifier: &quot;logo&quot;, url: url, options: nil)</span><br><span class="line">        content.attachments = [attachment]</span><br><span class="line">    &#125; catch &#123;</span><br><span class="line">        print(&quot;The attachment was not loaded.&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码加载了logo图片的地址,转化为<code>URL</code>,然后用图片初始化附件.<code>UNNotificationAttachment</code>的初始化被标记为投掷条件, 所以需要一个<code>catch</code>block 解决错误.一旦创建好附件,将它加入<code>content</code>中.重新测试app.一旦应用加载,选择一个日期等待通知出现.</p>
+<p><img src="/img/14764388175933.png" alt=""><br>天哪!快看,我们发送了一个带图片的通知.这是在iOS10中首先提到的新特性.这特别酷,但我想如果能加一个 “稍后提示”按钮允许用户暂时忽略这个提示会更好.</p>
+<p>现在就做这个吧.</p>
+<h2 id="用通知的方法添加一个提示"><a href="#用通知的方法添加一个提示" class="headerlink" title="用通知的方法添加一个提示"></a>用通知的方法添加一个提示</h2><p>按照API中设定的方式,在通知中加入一个功能有点复杂.然而,没什么是不能解决的.为了在通知中加入一个功能,需要使用<code>UNNotificationAction</code>和<code>UNNotificationCategory</code>.</p>
+<p>首先,需要为功能定义一个类别<em>categories</em>. 只定义一个类别和一个功能.将下面几行代码插入<code>application(_:didFinishLaunchingWithOptions:)</code>方法中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let action = UNNotificationAction(identifier: &quot;remindLater&quot;, title: &quot;Remind me later&quot;, options: [])</span><br><span class="line">let category = UNNotificationCategory(identifier: &quot;myCategory&quot;, actions: [action], intentIdentifiers: [], options: [])</span><br><span class="line">UNUserNotificationCenter.current().setNotificationCategories([category])</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码创建了一个动作一个类别,并用<code>UNNotificationCategory</code>登记这个类别.</p>
+<p>可能,你会好奇为什么会存在类别. 他们用于不同的目的.将一个类别想象为一组功能,一旦创建,就能够在<code>UNNotificationContent</code> 中为通知添加一个类别, 这个类别中包含的所有功能都会展示在这个通知中</p>
+<p>在这个demo中,类别里面只有一个功能; 但如果我们许多功能,将它们赋值给类会使他们都得到使用.这就是为什么苹果的工程师提供了<code>UNNotificationCategory</code>来管理通知的功能.</p>
+<p>现在创建了一个功能一个类别并且登记了这个类别,使用它.更改创建<code>content</code>的这部分代码然后加入下面的:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content.categoryIdentifier = &quot;myCategory&quot;</span><br></pre></td></tr></table></figure></p>
+<p>这是告诉系统我们想在新的通知中使用<code>myCategory</code>.现在,编译并重新运行app看看发生了什么:<br><img src="/img/14764404214267.png" alt=""><br>太帅了! 我们的通知现在有了一个可爱的按钮.但是如果你点击这个按钮,它只是让通知消失了.剩下需要做的是编写相应这个动作的代码.</p>
+<p><code>UNUserNotificationCenterDelegate</code>协议定义了通知回调的方法.所以,为了响应这个动作,让我们扩展<code>AppDelegate</code>来实现<code>UNUserNotificationCenterDelegate</code>这个协议.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">extension AppDelegate: UNUserNotificationCenterDelegate &#123;</span><br><span class="line">    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -&gt; Void) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>userNotificationCenter(_:didReceive:withCompletionHandler:)</code>方法会在用户选择一个动作后调用.你能通过已给的<code>UNNotificationResponse</code>的<code>actionIdentifier</code>获得用户选择的动作.让我们完成这个方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -&gt; Void) &#123;</span><br><span class="line"> </span><br><span class="line">    if response.actionIdentifier == &quot;remindLater&quot; &#123;</span><br><span class="line">        let newDate = Date(timeInterval: 900, since: Date())</span><br><span class="line">        scheduleNotification(at: newDate)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码定制了一个当前时间之后的900秒(60s * 15 min)的新通知.最后,在 <code>scheduleNotification(at:)</code>方法中设置默认的通知中心的代理为<code>AppDelegate</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UNUserNotificationCenter.current().delegate = self</span><br></pre></td></tr></table></figure>
+<p>现在重新运行这个app并定制一个通知来测试它们.当通知出现后,点击<code>Remind me later</code>按钮.<br>你会在15分钟之后收到另一个通知.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我希望你喜欢这个关于用户通知框架的指导教程.在第二部分,我们会更深入的讨论通知并学习在通知中植入自定义的视图控制器.</p>
+<p>你可以在Github上下载这份教程的<a href="https://github.com/appcoda/NotificationsUI-Demo" target="_blank" rel="external">demo工程</a></p>
+<p><strong>声明</strong>: </p>
+<ul>
+<li>原英文文章来源于appcoda,本人仅作个人学习使用;若侵犯了原作者权益,立即删除</li>
+<li>本人英语水平有限,文章中若有翻译上的错误,还请指正(<a href="&#109;&#x61;&#105;&#x6c;&#x74;&#x6f;&#x3a;&#120;&#105;&#x61;&#x71;&#x69;&#110;&#103;&#48;&#56;&#50;&#48;&#x40;&#x31;&#x36;&#x33;&#46;&#x63;&#111;&#x6d;">&#120;&#105;&#x61;&#x71;&#x69;&#110;&#103;&#48;&#56;&#50;&#48;&#x40;&#x31;&#x36;&#x33;&#46;&#x63;&#111;&#x6d;</a>)</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/" data-id="cj1etemnj0007q0uxi6gz43zy" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/24/iOS-播放本地音频/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          iOS 播放本地音频
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/09/21/在Xcode7中使用Swift进行单元测试/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">在Xcode7中使用Swift进行单元测试</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/04/12/亲，今天墓地2折/">亲，今天墓地2折</a>
+          </li>
+        
+          <li>
+            <a href="/2017/04/12/理财投资/">理财投资</a>
+          </li>
+        
+          <li>
+            <a href="/2017/04/10/50万的爱与恨/">50万的爱与恨</a>
+          </li>
+        
+          <li>
+            <a href="/2017/04/07/第一天第一课/">第一天第一课</a>
+          </li>
+        
+          <li>
+            <a href="/2017/04/06/我有病/">我有病</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Summer<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
