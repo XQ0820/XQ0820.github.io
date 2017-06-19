@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Summer Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Summer Blog">
+<meta property="og:url" content="http://yoursite.com/page/13/index.html">
+<meta property="og:site_name" content="Summer Blog">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Summer Blog">
+<meta name="twitter:description">
+  
+    <link rel="alternate" href="/atom.xml" title="Summer Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Summer Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="w-iOS10用户通知框架-User-Notifications-简介-翻译" class="article article-type-w" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/" class="article-date">
+  <time datetime="2016-10-17T02:27:24.000Z" itemprop="datePublished">2016-10-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/">iOS10用户通知框架(User Notifications)简介(翻译)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>原文链接</strong>: <a href="http://www.appcoda.com/ios10-user-notifications-guide/" target="_blank" rel="external">http://www.appcoda.com/ios10-user-notifications-guide/</a></p>
+<p>大家好,欢迎来到iOS10教程的通知指南. 今天,我们将聊一下在iOS10系统中如何实现通知. iOS10的通知API新增和修改了许多特性,包括基于触发器(triggers)的牛掰的请求系统,详细内如会在下文中详细讨论.<br>iOS10通知中最大的改变是<code>UserNotificationsUI</code>的框架,它可以在通知中自定义视图控制器.这就允许创建许多之前系统中完全不可能的很有用的各种通知</p>
+<h2 id="简单的用户通知"><a href="#简单的用户通知" class="headerlink" title="简单的用户通知"></a>简单的用户通知</h2><p>我们想要展示的通知并不全是精致且可交互的.因此,接下来开始演示怎么建立一个基本的文本通知.下载<a href="https://github.com/appcoda/NotificationsUI-Demo/raw/master/NotificationsUI.zip" target="_blank" rel="external">初始工程</a>并打开 <code>NotificationsUI.xcodeproj</code>. 看一下整个工程,你会发现什么都没有:我们用 <code>Main.storyboard</code> 结合 <code>ViewController.swift</code> 和 <code>AppDelegate.swift</code> 进行用户交互<br><img src="/img/14764273540293.png" alt=""></p>
+<p>打开 <code>Main.storyboard</code> 看一下 <code>ViewController</code> 文件. 今天我们做的这个apple用来提醒用户上网月度AppCoda的文章.它让用户选择需要通知的日期和时间.首先对这个app做一简单的修改:启用通知. 目前选择时间和日期一点用都没有.我们将要更新这个app,使得它在设置时间和日期后在指定时间创建通知.</p>
+<p>继续打开 <code>ViewController.swift</code> 让我们开始吧.</p>
+<p>当你打开 <code>ViewController.swift</code> 时, 你会发现文件很空. 只有一个在时间选择器选择了新的时间后,会被调用的功能函数<code>datePickerDidSelectNewDate</code>.像前面提到的,现在这个app除了创建通之外什么都没做. 让我们来实现这个功能</p>
+<p>在iOS10中创建通知的过程有一点变化.开发人员现在必须创建<em>requests</em>,向iOS请求展示通知.这些请求包括俩部分: <em>triggers</em> 和 <em>content</em> (触发器和内容).一个触发器是一系列发送通知所必须满足的条件.为了在iOS10中显示一个通知,首先从触发器开始.我们使用的基于时间的触发器的类是<code>UNCalendarNotificationTrigger</code>. Apple提供了也提供了其他的类,例如 <code>UNLocationNotificationTrigger</code> (当用户到达指定地点时触发通知)</p>
+<p>像上面声明的: 在iOS中展示通知的第一步是创建一个触发器.现在,让我们继续并且创建一个触发器.</p>
+<p>打开 <code>AppDelegate.swift</code>, 确保已经导入了 <code>UserNotification</code>框架, 所有通知相关的API都在这个框架里面:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import UserNotifications</span><br></pre></td></tr></table></figure>
+<p>接下来,添加函数<code>scheduleNotification(at date: Date)</code>.名如其义,这个函数负责在提供的日期内定制一个通知</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">func scheduleNotification(at date: Date) &#123;</span><br><span class="line">    let calendar = Calendar(identifier: .gregorian)</span><br><span class="line">    let components = calendar.dateComponents(in: .current, from: date)</span><br><span class="line">    let newComponents = DateComponents(calendar: calendar, timeZone: .current, month: components.month, day: components.day, hour: components.hour, minute: components.minute)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的代码中, 使用 <code>Gregorian</code> 日历将提供的日期分成几个组件.日期与组件不在这个教程的范围内,但需要知道一个日期由组件组成.单独展示日期的组件,例如小时,分钟,秒等.刚才的代码将时间拆分成组件并保存在 <code>components</code> 常量中.这样做是因为执行 <code>UNCalendarNotificationTrigger</code> 需要日期组件而不是日期. 然而, <code>UNCalendarNotificationTrigger</code>比较诡异的一点是直接从日期中取出完整的组件并不能使用, 而需要从已存在的实例中读取信息创建自己的 <code>DateComponents</code> 实例. 第三行代码就是做这个的:它只是从 <code>date</code> 中获取了相关信息创建了新的 <code>DateComponents</code> 实例.</p>
+<p>现在有了 <code>date</code> 的组件, 继续啊创建日历通知触发器. 像在iOS中的其他东西一样, <em>Apple</em>使这个创建过程相当简单. 只需要将下面的代码加入函数中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let trigger = UNCalendarNotificationTrigger(dateMatching: newComponents, repeats: false)</span><br></pre></td></tr></table></figure></p>
+<p>跟预想的一样,这行代码用时间组件创建了新的 <code>UNCalendarNotificationTrigger</code>. 因为只需要通知出现一次,将<code>repeats</code>设置为 <code>false</code>.</p>
+<p>现在已经创建完触发器,接下来的就是创建需要在通知中展示的 <em>content</em>. 这可以通过 <code>UNMutableNotificationContent</code> 类完成. 将下面几行代码放在 <code>trigger</code> 变量的下面创建通知内容:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let content = UNMutableNotificationContent()</span><br><span class="line">content.title = &quot;Tutorial Reminder&quot;</span><br><span class="line">content.body = &quot;Just a reminder to read your tutorial over at appcoda.com!&quot;</span><br><span class="line">content.sound = UNNotificationSound.default()</span><br></pre></td></tr></table></figure>
+<p>这些代码就能理解其含义:我们创建了一个新的 <code>UNMutableNotificationContent</code> 实例, 然后设置它的标题, 内容, 声音.</p>
+<p>看起来好像我们已经准备好展示第一个通知了. 然而,还剩俩步需要完成:1.创建通知<em>request</em>, 2.将它提供给系统,告诉iOS展示通知.</p>
+<p>为了创建通知请求,用相关的内容和触发器初始化一个 <code>UNNotificationRequest</code> 对象.还需要一个唯一标识码用来识别这个通知请求. 在 <code>scheduleNotification</code>函数中插入下面这行代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let request = UNNotificationRequest(identifier: &quot;textNotification&quot;, content: content, trigger: trigger)</span><br></pre></td></tr></table></figure></p>
+<p>很简单,对么?创建请求需要3个参数:</p>
+<ul>
+<li><code>identifier</code>: 这是我们请求的唯一标识.你很快就会看到,这个标识能用来取消通知请求.</li>
+<li><code>content</code>: 这是之前创建的通知内容</li>
+<li><code>trigger</code>: 这个触发器用来触发通知.当满足触发条件后,iOS将会展示这个通知</li>
+</ul>
+<p>好了,现在要做的最后一件事是将请求添加进管理整个app所有通知的通知中心.通知中心会根据合适的时间触发通知.</p>
+<p>将通知请求加入通知中心之前,最好先将已经存在的通知请求移除, 这样能够避免重复通知. 将下面的代码段加入函数中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">UNUserNotificationCenter.current().removeAllPendingNotificationRequests()</span><br><span class="line">UNUserNotificationCenter.current().add(request) &#123;(error) in</span><br><span class="line">    if let error = error &#123;</span><br><span class="line">        print(&quot;Uh oh! We had an error: \(error)&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一行代码得到通知中心的单例并调用 <code>removeAllPendingNotificationRequests</code> 方法移除所有挂起的通知请求.然后将请求加入通知中心.这个方法也在函数完成后也会调用.在我们实现中,这个控制器用来打印错误. 在继续操作之前, 确保 <code>scheduleNotification</code> 函数如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">func scheduleNotification(at date: Date) &#123;</span><br><span class="line">    let calendar = Calendar(identifier: .gregorian)</span><br><span class="line">    let components = calendar.dateComponents(in: .current, from: date)</span><br><span class="line">    let newComponents = DateComponents(calendar: calendar, timeZone: .current, month: components.month, day: components.day, hour: components.hour, minute: components.minute)</span><br><span class="line">    </span><br><span class="line">    let trigger = UNCalendarNotificationTrigger(dateMatching: newComponents, repeats: false)</span><br><span class="line">    </span><br><span class="line">    let content = UNMutableNotificationContent()</span><br><span class="line">    content.title = &quot;Tutorial Reminder&quot;</span><br><span class="line">    content.body = &quot;Just a reminder to read your tutorial over at appcoda.com!&quot;</span><br><span class="line">    content.sound = UNNotificationSound.default()</span><br><span class="line">    </span><br><span class="line">    let request = UNNotificationRequest(identifier: &quot;textNotification&quot;, content: content, trigger: trigger)</span><br><span class="line">    </span><br><span class="line">    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()</span><br><span class="line">    UNUserNotificationCenter.current().add(request) &#123;(error) in</span><br><span class="line">        if let error = error &#123;</span><br><span class="line">            print(&quot;Uh oh! We had an error: \(error)&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果代码和上面的一样,准备出发吧! 现在我们需要做的是在 <code>ViewController.swift</code>中配置当用户选择时间后调用<code>scheduleNotification(date:)</code> .在 <code>ViewController.swift</code>中,将下面的代码加入<code>datePickerDidSelectNewDate</code> 方法中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let selectedDate = sender.date</span><br><span class="line">let delegate = UIApplication.shared.delegate as? AppDelegate</span><br><span class="line">delegate?.scheduleNotification(at: selectedDate)</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码获取到了当前应用正在使用的的<code>AppDelegate</code>实例并用之前写的的函数定制通知.快来试试吧!运行app并选择未来的时间.等到设备时间到选择时间后看看发生了什么!</p>
+<p>呃,通知没出现,但是为什么呢?</p>
+<p>这有一些通知没出现的原因.</p>
+<p>首先,苹果致力于在iOS上保持一个完美的用户体验,体验的一部分是给用户提供从app内接受通知的控制权限.用户还没有授权展示通知,这就是为什么通知没有展现的原因.</p>
+<p>让我们修复这个问题.将下面的代码加入 <code>AppDelegate.swift</code>的方法中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -&gt; Bool &#123;</span><br><span class="line">    </span><br><span class="line">    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) &#123;(accepted, error) in</span><br><span class="line">        if !accepted &#123;</span><br><span class="line">            print(&quot;Notification access denied.&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里我们调用通知中心的<code>requestAuthorization</code>方法来获得用户使用通知的许可.我们也请求展示<br>告警和声音的能力.</p>
+<p>现在重新运行app.当app加载后,你会看见授权请求.确保你同意,然后app能够向设备发送通知.</p>
+<p>另一件你需要记住的是,这个通知不会再app内展示.因此,一旦你设置了日期,确保你返回主屏幕并锁屏.<br>如果所有步骤都准确无误,通知就会出现啦!<br><img src="/img/14764376688190.jpg" alt=""></p>
+<p>看见没? 向iOS用户发送通知没那么难, 只需要先执行一些预提示的步骤,例如请求通知权限.现在已经发送了简单的文本,让我们再加一张图片!</p>
+<h2 id="在通知中附加图片"><a href="#在通知中附加图片" class="headerlink" title="在通知中附加图片"></a>在通知中附加图片</h2><p>这个通知现在是基于文本.这没啥新鲜的! 让我们探索一下其他的特征,类似于在通知中展示图片.</p>
+<p>在初始工程中,我已经绑定了一张图片:名为 <code>logo.png</code> .如果你没看见,可能是因为它隐藏在<code>NotificationsUI</code>组中了. 无论怎样,这张图片在初始工程中. 让我们来看一下怎么将它展示在通知中.</p>
+<p><code>UserNotification</code> 框架为开发者提供了<code>UNNotificationAttachment</code>类,用来在通知中添加附件.附件可以是录音,图片和音频.他也支持许多文件格式. 更详细的信息可见看<a href="https://developer.apple.com/reference/usernotifications/unnotificationattachment" target="_blank" rel="external"> Apple Developer Website</a></p>
+<p>建立一个附件相当简单,像<code>UserNotifications.framework</code> 中的大多数任务一样. 我们只需要初始化<code>UNNotificationAttachment</code> 实例并把它加到通知内容中.更新 <code>scheduleNotification</code>方法并将下面的代码块插入在<code>request</code>变量前面.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if let path = Bundle.main.path(forResource: &quot;logo&quot;, ofType: &quot;png&quot;) &#123;</span><br><span class="line">    let url = URL(fileURLWithPath: path)</span><br><span class="line">    </span><br><span class="line">    do &#123;</span><br><span class="line">        let attachment = try UNNotificationAttachment(identifier: &quot;logo&quot;, url: url, options: nil)</span><br><span class="line">        content.attachments = [attachment]</span><br><span class="line">    &#125; catch &#123;</span><br><span class="line">        print(&quot;The attachment was not loaded.&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码加载了logo图片的地址,转化为<code>URL</code>,然后用图片初始化附件.<code>UNNotificationAttachment</code>的初始化被标记为投掷条件, 所以需要一个<code>catch</code>block 解决错误.一旦创建好附件,将它加入<code>content</code>中.重新测试app.一旦应用加载,选择一个日期等待通知出现.</p>
+<p><img src="/img/14764388175933.png" alt=""><br>天哪!快看,我们发送了一个带图片的通知.这是在iOS10中首先提到的新特性.这特别酷,但我想如果能加一个 “稍后提示”按钮允许用户暂时忽略这个提示会更好.</p>
+<p>现在就做这个吧.</p>
+<h2 id="用通知的方法添加一个提示"><a href="#用通知的方法添加一个提示" class="headerlink" title="用通知的方法添加一个提示"></a>用通知的方法添加一个提示</h2><p>按照API中设定的方式,在通知中加入一个功能有点复杂.然而,没什么是不能解决的.为了在通知中加入一个功能,需要使用<code>UNNotificationAction</code>和<code>UNNotificationCategory</code>.</p>
+<p>首先,需要为功能定义一个类别<em>categories</em>. 只定义一个类别和一个功能.将下面几行代码插入<code>application(_:didFinishLaunchingWithOptions:)</code>方法中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let action = UNNotificationAction(identifier: &quot;remindLater&quot;, title: &quot;Remind me later&quot;, options: [])</span><br><span class="line">let category = UNNotificationCategory(identifier: &quot;myCategory&quot;, actions: [action], intentIdentifiers: [], options: [])</span><br><span class="line">UNUserNotificationCenter.current().setNotificationCategories([category])</span><br></pre></td></tr></table></figure></p>
+<p>上面的代码创建了一个动作一个类别,并用<code>UNNotificationCategory</code>登记这个类别.</p>
+<p>可能,你会好奇为什么会存在类别. 他们用于不同的目的.将一个类别想象为一组功能,一旦创建,就能够在<code>UNNotificationContent</code> 中为通知添加一个类别, 这个类别中包含的所有功能都会展示在这个通知中</p>
+<p>在这个demo中,类别里面只有一个功能; 但如果我们许多功能,将它们赋值给类会使他们都得到使用.这就是为什么苹果的工程师提供了<code>UNNotificationCategory</code>来管理通知的功能.</p>
+<p>现在创建了一个功能一个类别并且登记了这个类别,使用它.更改创建<code>content</code>的这部分代码然后加入下面的:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content.categoryIdentifier = &quot;myCategory&quot;</span><br></pre></td></tr></table></figure></p>
+<p>这是告诉系统我们想在新的通知中使用<code>myCategory</code>.现在,编译并重新运行app看看发生了什么:<br><img src="/img/14764404214267.png" alt=""><br>太帅了! 我们的通知现在有了一个可爱的按钮.但是如果你点击这个按钮,它只是让通知消失了.剩下需要做的是编写相应这个动作的代码.</p>
+<p><code>UNUserNotificationCenterDelegate</code>协议定义了通知回调的方法.所以,为了响应这个动作,让我们扩展<code>AppDelegate</code>来实现<code>UNUserNotificationCenterDelegate</code>这个协议.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">extension AppDelegate: UNUserNotificationCenterDelegate &#123;</span><br><span class="line">    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -&gt; Void) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>userNotificationCenter(_:didReceive:withCompletionHandler:)</code>方法会在用户选择一个动作后调用.你能通过已给的<code>UNNotificationResponse</code>的<code>actionIdentifier</code>获得用户选择的动作.让我们完成这个方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -&gt; Void) &#123;</span><br><span class="line"> </span><br><span class="line">    if response.actionIdentifier == &quot;remindLater&quot; &#123;</span><br><span class="line">        let newDate = Date(timeInterval: 900, since: Date())</span><br><span class="line">        scheduleNotification(at: newDate)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码定制了一个当前时间之后的900秒(60s * 15 min)的新通知.最后,在 <code>scheduleNotification(at:)</code>方法中设置默认的通知中心的代理为<code>AppDelegate</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UNUserNotificationCenter.current().delegate = self</span><br></pre></td></tr></table></figure>
+<p>现在重新运行这个app并定制一个通知来测试它们.当通知出现后,点击<code>Remind me later</code>按钮.<br>你会在15分钟之后收到另一个通知.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我希望你喜欢这个关于用户通知框架的指导教程.在第二部分,我们会更深入的讨论通知并学习在通知中植入自定义的视图控制器.</p>
+<p>你可以在Github上下载这份教程的<a href="https://github.com/appcoda/NotificationsUI-Demo" target="_blank" rel="external">demo工程</a></p>
+<p><strong>声明</strong>: </p>
+<ul>
+<li>原英文文章来源于appcoda,本人仅作个人学习使用;若侵犯了原作者权益,立即删除</li>
+<li>本人英语水平有限,文章中若有翻译上的错误,还请指正(<a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#120;&#105;&#97;&#x71;&#105;&#x6e;&#103;&#48;&#x38;&#x32;&#48;&#64;&#x31;&#54;&#51;&#46;&#x63;&#x6f;&#x6d;">&#120;&#105;&#97;&#x71;&#105;&#x6e;&#103;&#48;&#x38;&#x32;&#48;&#64;&#x31;&#54;&#51;&#46;&#x63;&#x6f;&#x6d;</a>)</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/10/17/iOS10用户通知框架-User-Notifications-简介-翻译/" data-id="cj43ux4kc000cn0uxcsq962xb" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-在Xcode7中使用Swift进行单元测试" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/21/在Xcode7中使用Swift进行单元测试/" class="article-date">
+  <time datetime="2016-09-21T02:16:17.000Z" itemprop="datePublished">2016-09-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/09/21/在Xcode7中使用Swift进行单元测试/">在Xcode7中使用Swift进行单元测试</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>iOS 程序员经常需要debug自己的app,除非你是那种疯狂的程序大神,不然一定体会过几个小时几个小时找Bug最后却发现只是变量声明有误时候那种绝望的心情.比这更糟糕的是,几个小时也没找到Bug的原因. 无论你是程序新人还是开发过许多app的程序员,规范的编写单元测试能够使代码更可靠,安全且容易检查.</p>
+<p>幸运的是,Xcode7和Swift支持单元测试.虽然写了单元测试并不代表程序没Bug, 它仍然是检查代码片段按预期执行并使debug容易些的相当有效的方法.</p>
+<p>如名字那样,在单元测试中,会对指定的代码片段建立小的有针对性的测试函数,以确保每段代码都可以通过测试.如果测试通过,在函数旁边会出现绿色的标志.如果测试没有通过,无论失败原因是什么,Xcode都会将代码标记为失败.这表示你需要在代码中查找产生错误的原因</p>
+<h2 id="Demo概览"><a href="#Demo概览" class="headerlink" title="Demo概览"></a>Demo概览</h2><p>首先,在<a href="http://www.appcoda.com/unit-testing-swift/" target="_blank" rel="external">这里</a>下载我已经创建好的工程,这是个简单的用数值和百分比进行百分比计算的应用.(exp:10% * 80 = 8)</p>
+<p>这个百分比计算器相当简单.你主要看ViewController.swift这个文件, 文件中的代码注释的很通俗易懂.</p>
+<p>工程中一共有5对关联关系:每一个关系对应界面上的一个UI元素,除标题外,还有俩个IBActions对应俩个Slider,每个IBAction的名称准确解释了这个方法需要执行的动作.当俩个滑块中的任一个改变时,百分比和数值跟着一起改变</p>
+<p>此外,还有俩个简单的函数 <code>updateLabels()</code> 和 <code>percentage()</code> 用来执行你想要完成的动作:第一个函数更新滑块滑动时展示的数值,第二个函数传入俩个浮点型数值并返回百分比计算结果.</p>
+<p>在模拟器中运行app. 刚开始时候,一切正常.但只要你开始更新数值,就会发现计算结果不对.为了找到这个Bug,我们可以将代码分成几个单元并分开测试以检查各部分是否按照预期执行. 这样做并不会解决Bug, 但能够缩小你找Bug的范围.</p>
+<p><img src="/img/unit-test-demo-app.png" alt="unit-test-demo-app"></p>
+<p>创建工程时,我选了默认包含测试文件.(如果你想手动添加文件,在iOS资源文件中依次点击 File &gt; New &gt; File &gt; Unit Test Case).此处,测试文件已经由Xcode建好,可以在 导航器的<code>PercentageCalculatorTests</code> 文件夹中找到<br><img src="/img/xcode-unit-test-option.png" alt="xcode-unit-test-option"></p>
+<p>在<code>PercentageCalculatorTests.swift</code>文件中,类 <code>PercentageCalculatorTests</code> 里面已经创建了4个方法. 其中俩个是示例,可以删除(可以通过关键字<code>test</code>找到,并且在方法的序号列左侧有个方块形icon,名称以 <code>Example</code> 结尾).另俩个函数: <code>setUp()</code> 和 <code>tearDown()</code> 是专门用于测试的,在测试方法执行前后会依次调用.</p>
+<h2 id="开始编写单元测试"><a href="#开始编写单元测试" class="headerlink" title="开始编写单元测试"></a>开始编写单元测试</h2><p>现在,将要开始写你的第一个单元测试!这个教程中,只测试类 <code>ViewController</code> . 我们需要在 <code>PercentageCalculatorTests</code> 添加一个实例.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class PercentageCalculatorTests: XCTestCase &#123;</span><br><span class="line">    var vc: ViewController!</span><br><span class="line">    </span><br><span class="line">    override func setUp() &#123;</span><br><span class="line">        super.setUp()</span><br><span class="line">        // Put setup code here. This method is called before the invocation of  each test method in the class.</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func tearDown() &#123;</span><br><span class="line">        // Put teardown code here. This method is called after the invocation of each test method in the class.</span><br><span class="line">        super.tearDown()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>类 <code>PercentageCalculatorTests</code> 继承于 <code>XCTestCase</code>. 它包含了 <code>XCTest</code>框架. 每个<code>XCTestCase</code> 子类的实例负责测试工程中指定的一部分,例如一个特殊的特点.</p>
+<p>因为 <code>setup</code> 在所有测试方法之前调用, 在<code>setup</code>方法中初始化 <code>vc</code> , 这样可以在每个测试方法中获得一个新的 <code>ViewController</code> 实例. 像下面的代码一样更新 <code>setUp</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">override func setUp() &#123;</span><br><span class="line">    super.setUp()</span><br><span class="line"> </span><br><span class="line">    let storyboard = UIStoryboard(name: &quot;Main&quot;, bundle: NSBundle.mainBundle())</span><br><span class="line">    vc = storyboard.instantiateInitialViewController() as! ViewController</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>记住所有的测试方法都以关键字 <code>test</code> 开头,否则Xcode不识别. 添加一个新方法 <code>testPercentageCalculator</code> 用来确认 <code>ViewController</code> 中的<code>percentage()</code>方法是否正常运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func testPercentageCalculator() &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在单元测试时要检查某一大块代码是否正常运行. 这一大块代码通常只需要几行典型的代码来测试,你只测试一个方法或函数. 单元测试通过给一部分代码提供一个入参,用这个执行代码,然后检查返回参数是不是与我们预期的相符合<br><img src="/img/Example.png" alt="Example"></p>
+<p>比较我们预期结果是否正确这部分由 <code>XCTAssert</code>函数完成. 最简单的<code>XCTAssert</code> 函数为<code>XCTAssert(expression: BooleanType)</code>,需要传入BOOL表达式(exp: <code>5 &gt; 3</code>, <code>8.90 == 8.90</code> or <code>true</code>),函数返回真或假使得测试通过.</p>
+<p>快来试试吧!首先,在方法<code>testPercentageCalculator()</code>中加入下面这行.然后,将鼠标移动到方法名左边的菱形块图标处,鼠标来回移动,icon变成一个可运行的icon然后点击开始测试.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func testPercentageCalculator() &#123;</span><br><span class="line">        XCTAssert(true)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果运行顺利,测试通过,方法旁边出现一个绿色的对号.<br><img src="/img/unit-test-green-mark.png" alt="unit-test-green-mark"></p>
+<h2 id="检查百分比计算结果"><a href="#检查百分比计算结果" class="headerlink" title="检查百分比计算结果"></a>检查百分比计算结果</h2><p>现在开始动真格了:测试<code>percentage()</code>方法. 通过 <code>vc</code>属性调用这个方法, <code>vc</code>是<code>ViewController</code> 的一个实例. 传俩个浮点值 50 和 50 ,用静态值<code>p</code>保存结果. 在这里, <code>p</code>应该等于25 (50 * 50% = 25),检查这个用例 <code>XCTAssert(p == 25)</code>并执行测试方法. 用下面的代码替换<code>testPercentageCalculator()</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">func testPercentageCalculator() &#123;</span><br><span class="line">        // Should be 25</span><br><span class="line">        let p = vc.percentage(50, 50)</span><br><span class="line">        XCTAssert(p == 25)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>测试通过,意味着<code>ViewController</code> 的 函数 <code>percentage()</code>正常执行, 需要在其他地方找    bug原因. 可能在 <code>updateLabels()</code> 方法中</p>
+<h2 id="检查Label"><a href="#检查Label" class="headerlink" title="检查Label"></a>检查Label</h2><p>添加一个新的测试方法 <code>testLabelValuesShowedProperly()</code> 用来检查Label上的内容是否正确.然后从ViewController中调用方法 <code>updateLabels()</code>,这次, 我们检查每个Label上的text属性和我们想要展示的东西是否相符.</p>
+<p>记得你给 <code>XCTAssert</code>函数一个新的参数:字符串消息. 这样很方便,因为我们有多个(调用<code>XCTAssert</code>三次)需要完成检测的值. 如果测试不成功,这个消息会告诉我们到底哪里有问题.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func testLabelValuesShowedProperly() &#123;</span><br><span class="line">        vc.updateLabels(Float(80.0), Float(50.0), Float(40.0))</span><br><span class="line">        </span><br><span class="line">        // The labels should now display 80, 50 and 40</span><br><span class="line">        XCTAssert(vc.numberLabel.text == &quot;80.0&quot;, &quot;numberLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.percentageLabel.text == &quot;50.0%&quot;, &quot;percentageLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.resultLabel.text == &quot;40.0&quot;, &quot;resultLabel doesn&apos;t show the right text&quot;)</span><br></pre></td></tr></table></figure>
+<p>当你要执行这个方法时,你会得到<code>numberLabel</code>,<code>percentageLabel</code>,<code>resultsLabel</code>为<code>nil</code>的错误信息.这怎么可能?</p>
+<p>这是因为我在Storyboard文件中创建的Label,因此他们仅在视图加载时调用一次.但是单元测试中<code>loadView()</code>方法永不执行, 所以Label没有被创建他们都是<code>nil</code>. 这个问题有一个解决办法是调用<code>vc.loadView()</code> ,但苹果在官方文档中不建议这样做,因为视图已经加载后再加载一遍可能会引起内存泄漏.</p>
+<p>你应该获得<code>vc</code>的属性<code>view</code>,他会按顺序触发需要的方法,而不仅仅是<code>loadView()</code>.在<code>testLabelValuesShowedProperly()</code>中更新代码.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func testLabelValuesShowedProperly() &#123;</span><br><span class="line">        let _ = vc.view</span><br><span class="line">        vc.updateLabels(Float(80.0), Float(50.0), Float(40.0))</span><br><span class="line">        </span><br><span class="line">        // The labels should now display 80, 50 and 40</span><br><span class="line">        XCTAssert(vc.numberLabel.text == &quot;80.0&quot;, &quot;numberLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.percentageLabel.text == &quot;50.0%&quot;, &quot;percentageLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">        XCTAssert(vc.resultLabel.text == &quot;40.0&quot;, &quot;resultLabel doesn&apos;t show the right text&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用下滑线(_)默认一个常量名称,因为我们并不需要这个view而且也不会用到它.它只是告诉编译器”假装获得了这个视图并触发方法”</p>
+<p>执行这个测试(如果你想执行测试类中的所有方法,你可以点击<code>class PercentageCalculatorTests</code>旁边的方形)<br><img src="/img/unit-test-demo-fail.png" alt="unit-test-demo-fai"></p>
+<h2 id="修复Bug"><a href="#修复Bug" class="headerlink" title="修复Bug"></a>修复Bug</h2><p>如你所见,测试失败!具体的错误信息可以帮助我们确定可能引起Bug的原因. 结果告诉我们resultsLabel没有返回正确的text.让我们进到ViewController检查这些Label的是怎么被赋值的.在深入检查<code>ViewController.swift</code> 中的<code>updateLabels()</code>代码后,可以发现因为Bug的原因:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.resultLabel.text = &quot;\(rV + 10)&quot;</span><br></pre></td></tr></table></figure>
+<p>应该为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.resultLabel.text = &quot;\(rV)&quot;</span><br></pre></td></tr></table></figure>
+<p>更新代码然后再次测试.万事顺利!</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在这个教程中,学习了Xcode中的单元测试以及单元测试怎么帮助你在代码中找到Bug.除了减少Bug,单元测试能用来性能测试和异步测试. 其他吸引人的部分是UI测试,能通过记录动作在app中还原真实场景的表现.如果这听起来很有意思,你真该好好看看<a href="https://developer.apple.com/videos/play/wwdc2015-406/" target="_blank" rel="external">这部分关于UI测试的视频</a></p>
+<p>完整代码,可以在<a href="https://github.com/appcoda/SwiftUnitTestDemo" target="_blank" rel="external">这里下载</a></p>
+<p><strong>原文链接</strong>: <a href="http://www.appcoda.com/unit-testing-swift/" target="_blank" rel="external">http://www.appcoda.com/unit-testing-swift/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/09/21/在Xcode7中使用Swift进行单元测试/" data-id="cj43ux4mi0011n0uxpcz3v646" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-HealthKit-使用笔记-一" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/05/HealthKit-使用笔记-一/" class="article-date">
+  <time datetime="2016-08-05T09:18:21.000Z" itemprop="datePublished">2016-08-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/05/HealthKit-使用笔记-一/">HealthKit 使用笔记(一)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="为什么要用HealthKit"><a href="#为什么要用HealthKit" class="headerlink" title="为什么要用HealthKit"></a>为什么要用HealthKit</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  公司在做一款健康类的app, 要将各类第三方设备数据统计起来,而运动作为唯一一个手机本身就可以测量计步的功能模块,要好好利用起来.由于产品人员本身没有对手机计步功能的数据统计做出具体的逻辑要求, 以至于自己开发过程中分别经历了几个阶段</span><br><span class="line">1. 起初为了实现实时计步功能,自己选用了CoreMotion框架,因为CoreMotion框架的实时性更好,且读取数据更简单</span><br><span class="line">2. 一段时间后,领导们觉得既然用户给了读取数据的权限,那么需要将用户的历史数据保存起来,以备日后数据分析 ??, 所以自己接入了HealthKit框架用来保存历史数据,同时使用CoreMotion实时计步.</span><br><span class="line">3. 再后来, 服务器同学觉得 实时计步然后实时向服务器上传的方式不好, 并且还出现了一些其他小问题,所以我又将CoreMotion框架删除,并使用HealthKit统计当日运动步数数据??. 当时的微信运动的数据应该也只取了数据源为本机的数据, 因此领导要求我们的app需要保证和微信一样只取数据源为&quot;手机&quot;的数据??</span><br><span class="line">4. 又后来, app需要兼容iOS10, 与此同时,领导发现&quot;咦, 怎么微信数据和我们数据不一致?!blablababalala&quot;. 于是只好,又研究HealthKit??, 宝宝不开心</span><br></pre></td></tr></table></figure>
+<h2 id="知识点记录"><a href="#知识点记录" class="headerlink" title="知识点记录"></a>知识点记录</h2><h3 id="CoreMotion"><a href="#CoreMotion" class="headerlink" title="CoreMotion"></a>CoreMotion</h3><ul>
+<li>判断当前手机是否支持计步(是否包含M7以上协处理器, iPhone5s以上机型支持)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//实时从系统中读取数据 M7处理器功能是不是可用</span><br><span class="line">if (![CMPedometer isStepCountingAvailable])</span><br><span class="line"> &#123;</span><br><span class="line">    return ;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>读取数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CMPedometer *pedometer = [[CMPedometer alloc] init];</span><br><span class="line">NSDate *startDate = ...;</span><br><span class="line">NSDate *toDate = [NSDate date];</span><br><span class="line"> [pedometer queryPedometerDataFromDate:startDate</span><br><span class="line">                                       toDate:endDate</span><br><span class="line">                                  withHandler:</span><br><span class="line">    ^(CMPedometerData *pedometerData, NSError *error) </span><br><span class="line">&#123;</span><br><span class="line">  //do whatever you want</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>实时更新数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CMPedometer *pedometer = [[CMPedometer alloc] init];</span><br><span class="line"> [pedometer startPedometerUpdatesFromDate:fromDate withHandler:^(CMPedometerData *  _Nullable pedometerData, NSError * _Nullable error) </span><br><span class="line"> &#123;</span><br><span class="line"> </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="HealthKit"><a href="#HealthKit" class="headerlink" title="HealthKit"></a>HealthKit</h3><ul>
+<li>以下的所有 <code>self.healthStore</code> 通过 <code>getter</code> 方法获得</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (HKHealthStore *)healthStore</span><br><span class="line">&#123;</span><br><span class="line">    if (!_healthStore) &#123;</span><br><span class="line">        _healthStore = [[HKHealthStore alloc]init];</span><br><span class="line">    &#125;</span><br><span class="line">    return _healthStore;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>判断当前手机是否支持HealthKit框架</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isHealthDataAvailable</span><br><span class="line">&#123;</span><br><span class="line">    return [HKHealthStore isHealthDataAvailable];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获得使用用户数据的权限</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">/**获得使用授权 */</span><br><span class="line">- (void)authorizateHealthKit:(void(^)(BOOL isAuthorizateSucess))resultBlock</span><br><span class="line">&#123;</span><br><span class="line">    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,</span><br><span class="line">                                 (int64_t)(1.0 * NSEC_PER_SEC)),</span><br><span class="line">                   dispatch_get_main_queue(), ^&#123;</span><br><span class="line">                       NSSet *readObjectTypes =</span><br><span class="line">                       //步数</span><br><span class="line">                       [NSSet setWithObjects:</span><br><span class="line">                        [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierStepCount],</span><br><span class="line">                        //血糖</span><br><span class="line">                        [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBloodGlucose],</span><br><span class="line">                        //心脏收缩压</span><br><span class="line">                        [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBloodPressureSystolic],</span><br><span class="line">                        //心脏舒张压</span><br><span class="line">                        [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBloodPressureDiastolic],</span><br><span class="line">                                                 nil];</span><br><span class="line">                       </span><br><span class="line">                       [self.healthStore</span><br><span class="line">                        requestAuthorizationToShareTypes:nil</span><br><span class="line">                        readTypes:readObjectTypes</span><br><span class="line">                        completion:^(BOOL success, NSError * _Nullable error)</span><br><span class="line">                        &#123;</span><br><span class="line">                            if (resultBlock) &#123;</span><br><span class="line">                                resultBlock(success);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;];</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>获得日统计数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">/** 获得当日展示数据*/</span><br><span class="line">- (void)fetchHealthMotionDailyData:(void(^)(NSDictionary *resultDictionary))resultBlock</span><br><span class="line">&#123;</span><br><span class="line">    /**从HealthKit中读取数据*/</span><br><span class="line">    [self authorizateHealthKit:^(BOOL isAuthorizateSucess) &#123;</span><br><span class="line">        </span><br><span class="line">        if (!isAuthorizateSucess) &#123;</span><br><span class="line">            //授权失败,提示用户</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        __block NSMutableDictionary *tempDictionary = [NSMutableDictionary dictionaryWithCapacity:1];</span><br><span class="line">        [self fetchSampleDataResultBlock:^(NSDictionary *queryResultDict) &#123;</span><br><span class="line">            int stepValue;</span><br><span class="line">            if ([queryResultDict.allKeys containsObject:@&quot;sampleStepCount&quot;]) &#123;</span><br><span class="line">            //此处即为所得到的运动步数</span><br><span class="line">                stepValue = ((NSNumber *)queryResultDict[@&quot;sampleStepCount&quot;]).intValue;</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                stepValue = 0;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;];</span><br><span class="line">        </span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (void)fetchSampleDataResultBlock:(void(^)(NSDictionary *queryResultDict))resultBlock</span><br><span class="line">&#123;</span><br><span class="line">    NSMutableDictionary *tempDict = @&#123;&#125;.mutableCopy;</span><br><span class="line"></span><br><span class="line">    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];</span><br><span class="line">    [formatter setDateFormat:@&quot;yyyy-MM-dd&quot;];</span><br><span class="line">    NSString *today = [formatter stringFromDate:[NSDate date]];</span><br><span class="line">    NSDate *fromDate = [MMUtils stringToDate:today isStart:YES];</span><br><span class="line">    </span><br><span class="line">    HKSampleType *sampleType = [HKSampleType quantityTypeForIdentifier:HKQuantityTypeIdentifierStepCount];</span><br><span class="line">    __block double totalStepCount = 0;//总步行数</span><br><span class="line"></span><br><span class="line">    //TODO:----0805</span><br><span class="line">    //获取当日数据有俩种方法</span><br><span class="line">    if (0) &#123;</span><br><span class="line">#pragma clang diagnostic push</span><br><span class="line">#pragma clang diagnostic ignored &quot;-Wunreachable-code&quot;</span><br><span class="line">        //1.第一种方法为 按时间点数据累加,但当数据源有若干个时,累加的数据会变成所有数据源数据之和</span><br><span class="line">        [self executeQueryQuantityType:sampleType startDate:fromDate endDate:[NSDate date] callBackResultBlock:^(NSArray * _Nullable results, NSError *error) &#123;</span><br><span class="line">            </span><br><span class="line">            for (HKQuantitySample *sample in results)</span><br><span class="line">            &#123;</span><br><span class="line">                //根据数据源累加数据</span><br><span class="line">                if ([sample.source.name isEqualToString:[UIDevice currentDevice].name])</span><br><span class="line">                &#123;</span><br><span class="line">                    double stepCount = [sample.quantity doubleValueForUnit:[HKUnit countUnit]];</span><br><span class="line">                    </span><br><span class="line">                    totalStepCount += stepCount;</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">            &#125;</span><br><span class="line">            [tempDict setObject:@(totalStepCount) forKey:kTotalSampleStepCountKey];</span><br><span class="line">            </span><br><span class="line">            if (resultBlock) &#123;</span><br><span class="line">                resultBlock(tempDict);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;];</span><br><span class="line"> #pragma clang diagnostic pop</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //2.第二种方法为获取当日数据的统计数据,使用这种方式,可以在有若干数据源时,获得与&quot;健康app&quot;相对应的统计数据</span><br><span class="line">    HKQuantityType *quantityType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierStepCount];</span><br><span class="line"></span><br><span class="line">    [self executeQueryQuantityType:quantityType startDate:fromDate endDate:[NSDate date] callBackResultBlock:^(NSArray * _Nullable results, NSError *error) &#123;</span><br><span class="line">        </span><br><span class="line">        HKStatistics *result = results[0];</span><br><span class="line">        HKQuantity *sum = [result sumQuantity];//此处即为请求当日已经统计过的数据</span><br><span class="line">        double stepCount = [sum doubleValueForUnit:[HKUnit countUnit]];</span><br><span class="line">        [tempDict setObject:@(stepCount) forKey:kTotalSampleStepCountKey];</span><br><span class="line">        if (resultBlock) &#123;</span><br><span class="line">            resultBlock(tempDict);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">//数据点查询</span><br><span class="line"></span><br><span class="line">- (void)executeQueryQuantityType:(HKSampleType *)quantityType</span><br><span class="line">                       startDate:(NSDate *)startDate</span><br><span class="line">                         endDate:(NSDate *)endDate</span><br><span class="line">             callBackResultBlock:(void(^)(NSArray * __nullable results, NSError *error))resultBlock</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    HKQuantityType *stepType = [HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierStepCount];</span><br><span class="line">    NSPredicate *predicate = [HKQuery predicateForSamplesWithStartDate:startDate endDate:endDate options:HKQueryOptionStrictStartDate];</span><br><span class="line">    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:HKSampleSortIdentifierStartDate ascending:YES];</span><br><span class="line">    </span><br><span class="line">    //TODO:----0805 要求查询统计数据</span><br><span class="line"></span><br><span class="line">    if (0) &#123;</span><br><span class="line">#pragma clang diagnostic push</span><br><span class="line">#pragma clang diagnostic ignored &quot;-Wunreachable-code&quot;</span><br><span class="line">//按照查询条件,返回满足时间段内的所有数据</span><br><span class="line">        HKSampleQuery *sampleQuery = [[HKSampleQuery alloc] initWithSampleType:stepType</span><br><span class="line">                                                                     predicate:predicate</span><br><span class="line">                                                                         limit:HKObjectQueryNoLimit</span><br><span class="line">                                                               sortDescriptors:@[sortDescriptor]</span><br><span class="line">                                                                resultsHandler:^(HKSampleQuery *query, NSArray *results, NSError *error)</span><br><span class="line">                                      &#123;</span><br><span class="line">                                          if (resultBlock) &#123;</span><br><span class="line">                                              resultBlock(results, error);</span><br><span class="line">                                          &#125;</span><br><span class="line">                                          </span><br><span class="line">                                      &#125;];</span><br><span class="line">        [self.healthStore executeQuery:sampleQuery];</span><br><span class="line">#pragma clang diagnostic pop</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //查询当天数据的统计数据</span><br><span class="line">    //查询数据的时间间隔</span><br><span class="line">    NSDateComponents *intervalCompents = [[NSDateComponents alloc]init];</span><br><span class="line">    intervalCompents.day = 1;</span><br><span class="line">    </span><br><span class="line">    //查询数据的开始时间(锚点 anchordate)</span><br><span class="line">    //1.获取日历</span><br><span class="line">    NSCalendar *calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];</span><br><span class="line">    </span><br><span class="line">    //2.当前时间组件</span><br><span class="line">    NSDateComponents *currentCompents = [calendar components:NSCalendarUnitSecond|NSCalendarUnitMinute|NSCalendarUnitHour fromDate:[NSDate date]];</span><br><span class="line">    NSDate *sendDate = [NSDate dateWithTimeIntervalSinceNow:0];</span><br><span class="line">    </span><br><span class="line">    //查询条件 (10天 * 24小时 )</span><br><span class="line">    NSDate *sstartDate = [NSDate dateWithTimeIntervalSinceNow:-(currentCompents.hour * 3600 + currentCompents.minute * 60 + currentCompents.second)];</span><br><span class="line">    NSPredicate *spredicate = [HKQuery predicateForSamplesWithStartDate:sstartDate endDate:sendDate options:HKQueryOptionStrictStartDate];</span><br><span class="line">    </span><br><span class="line">    [self executeStatisticsQueryForQuantityType:stepType predicate:spredicate anchorDate:sendDate intervalComponents:intervalCompents callBackResult:^(HKStatistics * _Nullable result, NSError *error) &#123;</span><br><span class="line">        if (resultBlock) &#123;</span><br><span class="line">            resultBlock(@[result], error);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//统计数据</span><br><span class="line">- (void)executeStatisticsQueryForQuantityType:(HKQuantityType *)quantityType</span><br><span class="line">                          predicate:(nullable NSPredicate *)quantitySamplePredicate</span><br><span class="line">                         anchorDate:(NSDate *)anchorDate</span><br><span class="line">                 intervalComponents:(NSDateComponents *)intervalComponents</span><br><span class="line">                     callBackResult:(void (^)(HKStatistics * __nullable result, NSError *error))queryResult</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">    HKStatisticsQuery *statisticQuery =</span><br><span class="line">    [[HKStatisticsQuery alloc]initWithQuantityType:quantityType quantitySamplePredicate:quantitySamplePredicate options:HKStatisticsOptionCumulativeSum completionHandler:^(HKStatisticsQuery * _Nonnull query, HKStatistics * _Nullable result, NSError * _Nullable error) &#123;</span><br><span class="line">        if (queryResult) &#123;</span><br><span class="line">            queryResult(result, error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;];</span><br><span class="line">    [self.healthStore executeQuery:statisticQuery];</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查询指定日期时间段内的数据,此处为前10日</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line">//查询指定日期时间段的数据(前10日)</span><br><span class="line">- (void)fetchAllHealthDataByDay:(void(^)(NSArray *dataArray))resultBlock</span><br><span class="line">&#123;</span><br><span class="line">    HKQuantityType *quantityType = [HKQuantityType quantityTypeForIdentifier:HKQuantityTypeIdentifierStepCount];</span><br><span class="line">    </span><br><span class="line">    //查询数据的时间间隔</span><br><span class="line">    NSDateComponents *intervalCompents = [[NSDateComponents alloc]init];</span><br><span class="line">    intervalCompents.day = 1;</span><br><span class="line">    </span><br><span class="line">    //查询数据的开始时间(锚点 anchordate)</span><br><span class="line">    //1.获取日历</span><br><span class="line">    NSCalendar *calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];</span><br><span class="line">    </span><br><span class="line">    //2.当前时间组件</span><br><span class="line">    NSDateComponents *currentCompents = [calendar components:NSCalendarUnitSecond|NSCalendarUnitMinute|NSCalendarUnitHour fromDate:[NSDate date]];</span><br><span class="line">    NSDate *endDate = [NSDate dateWithTimeIntervalSinceNow:-(currentCompents.hour * 3600 + currentCompents.minute * 60 + currentCompents.second)];</span><br><span class="line">    </span><br><span class="line">    //查询条件 (10天 * 24小时 )</span><br><span class="line">    NSDate *startDate = [NSDate dateWithTimeIntervalSinceNow:-(currentCompents.hour * 3600 + currentCompents.minute * 60 + currentCompents.second + 10 * 24 * 3600)];</span><br><span class="line">    NSPredicate *predicate = [HKQuery predicateForSamplesWithStartDate:startDate endDate:endDate options:HKQueryOptionStrictStartDate];</span><br><span class="line">    //TODO:0805---待修改</span><br><span class="line">        [self executeQueryForQuantityType:quantityType</span><br><span class="line">                                predicate:predicate</span><br><span class="line">                               anchorDate:endDate</span><br><span class="line">                       intervalComponents:intervalCompents</span><br><span class="line">                           callBackResult:^(HKStatisticsCollection * _Nullable result, NSError *error) &#123;</span><br><span class="line">                               </span><br><span class="line">                               __block NSMutableArray *tempArray = @[].mutableCopy;</span><br><span class="line">                               [result.statistics enumerateObjectsUsingBlock:^(HKStatistics * _Nonnull statistics,</span><br><span class="line">                                                                               NSUInteger idx, BOOL * _Nonnull statisticsStop) &#123;</span><br><span class="line">                                  /* [statistics.sources enumerateObjectsUsingBlock:^(HKSource * _Nonnull source,</span><br><span class="line">                                                                                    NSUInteger idx, BOOL * _Nonnull sourceStop) &#123;</span><br><span class="line">                                       </span><br><span class="line">                                      // double stepCount = [[statistics sumQuantityForSource:source] doubleValueForUnit:[HKUnit countUnit]];</span><br><span class="line">                                       </span><br><span class="line">                                        double stepCount = [[statistics sumQuantity] doubleValueForUnit:[HKUnit countUnit]];</span><br><span class="line">                                       NSDateFormatter *formatter = [[NSDateFormatter alloc]init];</span><br><span class="line">                                       [formatter setDateFormat:@&quot;yyyy-MM-dd&quot;];</span><br><span class="line">                                       </span><br><span class="line">                                       NSString *stringDate = [formatter stringFromDate:statistics.startDate];</span><br><span class="line">                                       //NSLog(@&quot;******** %f, %@&quot;,stepCount, stringDate);</span><br><span class="line">                                       </span><br><span class="line">                                       </span><br><span class="line">                                       NSDictionary *tempDictionary = [NSDictionary dictionaryWithObjectsAndKeys:stringDate, @&quot;date_time&quot;,@(stepCount),@&quot;step&quot;, nil];</span><br><span class="line">                                       </span><br><span class="line">                                       [tempArray insertObject:tempDictionary atIndex:0];</span><br><span class="line">                                       *sourceStop = YES;</span><br><span class="line">                                   &#125;];*/</span><br><span class="line">                                   </span><br><span class="line">                                   </span><br><span class="line">                                   double stepCount = [[statistics sumQuantity] doubleValueForUnit:[HKUnit countUnit]];</span><br><span class="line">                                   int step = (int)ceil(stepCount);</span><br><span class="line">                                   NSDateFormatter *formatter = [[NSDateFormatter alloc]init];</span><br><span class="line">                                   [formatter setDateFormat:@&quot;yyyy-MM-dd&quot;];</span><br><span class="line">                                   </span><br><span class="line">                                   NSString *stringDate = [formatter stringFromDate:statistics.startDate];</span><br><span class="line">                                   //NSLog(@&quot;******** %f, %@&quot;,stepCount, stringDate);</span><br><span class="line">                                   </span><br><span class="line">                                   </span><br><span class="line">                                   NSDictionary *tempDictionary = [NSDictionary dictionaryWithObjectsAndKeys:stringDate, @&quot;date_time&quot;,@(step),@&quot;step&quot;, nil];</span><br><span class="line">                                   </span><br><span class="line">                                   [tempArray insertObject:tempDictionary atIndex:0];</span><br><span class="line">                               &#125;];</span><br><span class="line">                               </span><br><span class="line">                               if (resultBlock) &#123;</span><br><span class="line">                                   resultBlock(tempArray);</span><br><span class="line">                               &#125;</span><br><span class="line">                           &#125;];</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">//分类统计查询</span><br><span class="line">- (void)executeQueryForQuantityType:(HKQuantityType *)quantityType</span><br><span class="line">                          predicate:(nullable NSPredicate *)quantitySamplePredicate</span><br><span class="line">                         anchorDate:(NSDate *)anchorDate</span><br><span class="line">                 intervalComponents:(NSDateComponents *)intervalComponents</span><br><span class="line">                     callBackResult:(void (^)(HKStatisticsCollection * __nullable result, NSError *error))queryResult</span><br><span class="line">&#123;</span><br><span class="line">    </span><br><span class="line">    HKStatisticsCollectionQuery *collectionQuery =</span><br><span class="line">    [[HKStatisticsCollectionQuery alloc] initWithQuantityType:quantityType</span><br><span class="line">                                      quantitySamplePredicate:quantitySamplePredicate</span><br><span class="line">                                                      options:HKStatisticsOptionCumulativeSum | HKStatisticsOptionSeparateBySource</span><br><span class="line">                                                   anchorDate:anchorDate</span><br><span class="line">                                           intervalComponents:intervalComponents];</span><br><span class="line">    </span><br><span class="line">    collectionQuery.initialResultsHandler = ^(HKStatisticsCollectionQuery *query, HKStatisticsCollection * __nullable result, NSError * __nullable error)&#123;</span><br><span class="line">        if (queryResult) &#123;</span><br><span class="line">            queryResult(result, error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    [self.healthStore executeQuery:collectionQuery];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>这次使用HealthKit过程中使用到了三种query, 分别为<code>HKStatisticsCollectionQuery</code> , <code>HKStatisticsQuery</code>, <code>HKSampleQuery</code>, 不同的query返回的数据结果不同, 根据不同的场景,使用不同的查询方式. </li>
+<li>HealthKit里面还有很多东西需要学习, 这次开发过程中遇到的问题理解的也不透彻,需要以后不断加强</li>
+</ol>
+<p><em>参考链接</em></p>
+<ol>
+<li>iOS 8 HealthKit 介绍 <a href="http://vit0.com/blog/2014/10/30/ios-8-healthkit-jie-shao/" target="_blank" rel="external">http://vit0.com/blog/2014/10/30/ios-8-healthkit-jie-shao/</a> </li>
+<li>HealthKitDemo <a href="https://github.com/MarsCWD/HealthKitDemo" target="_blank" rel="external">https://github.com/MarsCWD/HealthKitDemo</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/08/05/HealthKit-使用笔记-一/" data-id="cj43ux4jw0004n0ux75taiezb" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-绘制尾部带有圆圈的圆环" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/08/02/绘制尾部带有圆圈的圆环/" class="article-date">
+  <time datetime="2016-08-02T10:49:58.000Z" itemprop="datePublished">2016-08-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/02/绘制尾部带有圆圈的圆环/">绘制尾部带有圆圈的圆环</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#绘制尾部带有圆圈的圆环</p>
+<h2 id="UI设计稿如下"><a href="#UI设计稿如下" class="headerlink" title="UI设计稿如下"></a>UI设计稿如下</h2><p><img src="/img/1.png" alt="屏幕快照 2016-08-02 17.37.42-w640"></p>
+<h2 id="知识关键点"><a href="#知识关键点" class="headerlink" title="知识关键点"></a>知识关键点</h2><ul>
+<li>用<code>CAShapeLayer</code>绘制圆环</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">- (CAShapeLayer *)shaperLayerRadius:(CGFloat)radius</span><br><span class="line">                    fillColor:(UIColor *)fillColor</span><br><span class="line">                  strokeColor:(UIColor *)strokeColor</span><br><span class="line">                           endAngle:(CGFloat)endAngle</span><br><span class="line">&#123;</span><br><span class="line">    CGFloat centerX = self.backGroundView.frame.size.width / 2.0;</span><br><span class="line">    CGFloat centerY = self.backGroundView.frame.size.height / 2.0;</span><br><span class="line">    </span><br><span class="line">    UIBezierPath *path =</span><br><span class="line">    [UIBezierPath bezierPathWithArcCenter:CGPointMake(centerX, centerY)</span><br><span class="line">                                radius:radius</span><br><span class="line">                            startAngle:M_PI * (-90) / 180.0</span><br><span class="line">                              endAngle:M_PI * (endAngle) / 180.0</span><br><span class="line">                             clockwise:YES];</span><br><span class="line">    CAShapeLayer *layer = [CAShapeLayer layer];</span><br><span class="line">    layer.path = path.CGPath;</span><br><span class="line">    layer.fillColor = fillColor.CGColor;</span><br><span class="line">    layer.strokeColor = strokeColor.CGColor;</span><br><span class="line">    layer.lineWidth = 10.0;</span><br><span class="line">    layer.frame = self.backGroundView.bounds;</span><br><span class="line">    return layer;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>CABasicAnimation</code>完成圆环绘制动画,以下代码中,需要绘制的layer为<code>self.bodyFatLayer</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:NSStringFromSelector(@selector(strokeEnd))];</span><br><span class="line">pathAnimation.duration = 5.0;</span><br><span class="line">pathAnimation.fromValue = @0;</span><br><span class="line">pathAnimation.toValue = @1;</span><br><span class="line">[self.bodyFatLayer addAnimation:pathAnimation forKey:NSStringFromSelector(@selector(strokeEnd))];</span><br></pre></td></tr></table></figure>
+<ul>
+<li>计算尾部圆环的位置公式为</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">圆点坐标：(x0,y0)</span><br><span class="line">    </span><br><span class="line">半径：r</span><br><span class="line">角度：a0</span><br><span class="line">    </span><br><span class="line">则圆上任一点为：（x1,y1）</span><br><span class="line">x1   =   x0   +   r   *   cos(ao   *   3.14   /180   )</span><br><span class="line">y1   =   y0   +   r   *   sin(ao   *   3.14   /180   )</span><br></pre></td></tr></table></figure>
+<ul>
+<li>动画开始之前计算<code>self.bodyFatValueLayer</code>在view中的位置,并添加动画</li>
+<li><code>CAKeyframeAnimation</code> 完成尾部圆环的动画,其中动画所需要的<code>path</code>由圆环<code>self.bodyFatLayer</code>的<code>path</code>决定.以下代码中需要沿着圆环轨迹运动的<code>layer</code>为<code>self.bodyFatValueLayer</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CAKeyframeAnimation *penAnimation = [CAKeyframeAnimation animationWithKeyPath:@&quot;position&quot;];</span><br><span class="line">penAnimation.duration = 5.0;</span><br><span class="line">penAnimation.path = self.bodyFatLayer.path;</span><br><span class="line">penAnimation.calculationMode = kCAAnimationPaced;</span><br><span class="line">[self.bodyFatValueLayer addAnimation:penAnimation forKey:@&quot;penAnimation&quot;];</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/08/02/绘制尾部带有圆圈的圆环/" data-id="cj43ux4oo002xn0ux0ighrprk" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/page/12/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">August 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/06/19/总觉得自己是个白痴/">总觉得自己是个白痴</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/16/深夜食堂/">深夜食堂</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/15/现实中的樊胜美/">现实中的樊胜美</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/13/一个人的好时光/">一个人的好时光</a>
+          </li>
+        
+          <li>
+            <a href="/2017/06/08/今天星期四/">今天星期四</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Summer<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
